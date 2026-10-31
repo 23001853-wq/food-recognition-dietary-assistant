@@ -1,0 +1,6 @@
+# Threshold must be selected using validation data.
+model_pointer: artifacts/production/current.json
+top_k: 3
+device: auto
+uncertainty_threshold: null
+allow_untrusted_artifacts: false

@@ -1,0 +1,10 @@
+dataset: food101
+root: data/raw
+split_version: v1
+manifest_dir: data/splits/v1
+seed: 42
+validation_fraction: 0.2
+class_list: configs/classes_poc.yaml
+original_train_split: train
+original_test_split: test
+local_eval_dir: data/local_eval

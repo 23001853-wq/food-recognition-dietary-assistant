@@ -1,0 +1,17 @@
+# Proposed starting settings; resolve preprocessing from weights at training time.
+model_name: efficientnet_b0
+weights: EfficientNet_B0_Weights.IMAGENET1K_V1
+data_config: configs/data.yaml
+seed: 42
+input_size: [224, 224]
+batch_size: 32
+head_epochs: 5
+fine_tune_epochs: 10
+head_lr: 0.001
+fine_tune_lr: 0.0001
+optimizer: AdamW
+weight_decay: 0.0001
+selection_metric: macro_f1
+selection_split: val
+device: auto
+amp: true

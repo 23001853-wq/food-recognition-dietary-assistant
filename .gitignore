@@ -216,3 +216,29 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project data, private uploads and generated model files
+/data/raw/**
+!/data/raw/.gitkeep
+/data/processed/**
+!/data/processed/.gitkeep
+/data/local_eval/**
+!/data/local_eval/.gitkeep
+/storage/uploads/**
+!/storage/uploads/.gitkeep
+/storage/temp/**
+!/storage/temp/.gitkeep
+/artifacts/models/**
+!/artifacts/models/**/
+!/artifacts/models/**/.gitkeep
+*.pth
+*.pt
+*.ckpt
+*.joblib
+*.pkl
+*.pickle
+*.onnx
+*.dump
+*.sql.gz
+.env.*
+!.env.example

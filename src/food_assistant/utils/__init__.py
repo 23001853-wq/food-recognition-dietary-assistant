@@ -1,0 +1,1 @@
+"""Food assistant utils package."""

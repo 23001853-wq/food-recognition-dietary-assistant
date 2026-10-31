@@ -1,0 +1,27 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+flowchart TD
+    A["Food-101 original<br/>train / test"] --> B["Validate images, labels, counts"]
+    B --> C["Select POC classes or 101 full"]
+    C --> D["Stratified split original train<br/>train_internal / val_internal"]
+    D --> L["Locked test from original test"]
+    D --> E["Shared train/val manifest"]
+
+    E --> F1["HOG extraction<br/>train Linear SVM"]
+    E --> F2["ResNet18 ImageNet weights<br/>replace head + fine-tune"]
+    E --> F3["EfficientNet-B0 ImageNet weights<br/>replace head + fine-tune"]
+
+    F1 --> V1["Tune with validation"]
+    F2 --> V2["Checkpoint by validation"]
+    F3 --> V3["Checkpoint by validation"]
+
+    V1 --> G["Freeze candidate settings"]
+    V2 --> G
+    V3 --> G
+    L --> H["Final test comparison"]
+    G --> H
+    H --> I["Top-1, macro-F1, confusion matrix<br/>latency, artifact size"]
+    I --> J{"Select production model<br/>on measured evidence"}
+    J --> K["Publish model + config + label map"]
+    K --> M["artifacts/production/current.json"]
+
+    D -.->|"Test never used for tuning"| H

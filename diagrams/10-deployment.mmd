@@ -1,0 +1,22 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+flowchart TB
+    B["Web Browser<br/>http://localhost:8501"]
+    subgraph HOST["Developer Laptop / Local Machine"]
+        ST["Python venv<br/>Streamlit app & services"]
+        RT["PyTorch inference<br/>CPU or CUDA device"]
+        FILES[("Local Storage<br/>artifacts + optional uploads")]
+        subgraph DBENV["PostgreSQL Environment"]
+            PG[("PostgreSQL<br/>port 5432 - local/internal")]
+            VOL[("Persistent DB volume/data")]
+        end
+        TRAIN["Offline training scripts<br/>CPU/GPU or external Colab"]
+    end
+    B <-->|"User interactions"| ST
+    ST --> RT
+    RT -->|"Load release"| FILES
+    ST <-->|"SQLAlchemy / psycopg"| PG
+    PG --> VOL
+    TRAIN -->|"Release trained model to file storage"| FILES
+
+    NOTES["No public access, no auth in single-user MVP"]
+    ST -.-> NOTES

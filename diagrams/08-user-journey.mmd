@@ -1,0 +1,28 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+flowchart TD
+    START(["Open Recognize"]) --> UP["Upload image"]
+    UP --> VAL{"Valid image?"}
+    VAL -- No --> ERR["Show error and retry"]
+    ERR --> UP
+    VAL -- Yes --> PREV["Preview / optional manual crop"]
+    PREV --> ANA["Analyze crop with trained model"]
+    ANA --> READY{"Model available?"}
+    READY -- No --> MODELERR["Show model setup error"]
+    READY -- Yes --> TOP["Display top-3 + raw scores"]
+    TOP --> CONF["User confirms/corrects food"]
+    CONF --> PORT["Choose portion S/M/L or custom gram"]
+    PORT --> NUT{"Reviewed nutrition mapping and grams?"}
+    NUT -- Yes --> KC["Calculate estimated kcal + source"]
+    NUT -- No --> UNK["Kcal unavailable / manual entry"]
+    KC --> META["Choose date + meal type"]
+    UNK --> META
+    META --> SAVE["Confirm and save"]
+    SAVE --> DBS{"DB committed?"}
+    DBS -- No --> DBERR["Show save failed, retry"]
+    DBERR --> SAVE
+    DBS -- Yes --> DIARY["Meal Diary"]
+    DIARY --> DASH["Dashboard"]
+    DIARY --> MORE{"Another dish in same photo?"}
+    MORE -- Yes --> PREV
+    MORE -- No --> END(["Finish"])
+    DASH --> END

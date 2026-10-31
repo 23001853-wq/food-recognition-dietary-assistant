@@ -1,0 +1,92 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+erDiagram
+    users ||--o{ meal_logs : owns
+    users ||--o{ prediction_history : requests
+    model_versions ||--o{ prediction_history : generates
+    meal_logs ||--|{ meal_items : contains
+    prediction_history o|--o| meal_items : referenced_by
+    food_classes o|--o{ meal_items : confirmed_as
+    food_classes ||--o{ food_nutrition_mappings : mapped_by
+    nutrition_foods ||--o{ food_nutrition_mappings : matched_to
+
+    users {
+        uuid id PK
+        string display_name
+        string email UK
+        timestamptz created_at
+    }
+    food_classes {
+        uuid id PK
+        string dataset_key UK
+        string display_name_en
+        string display_name_vi
+        boolean is_active
+        timestamptz created_at
+    }
+    nutrition_foods {
+        uuid id PK
+        string name
+        decimal kcal_per_100g
+        string source_name
+        string source_record_id
+        string provenance_url
+        timestamptz retrieved_at
+        decimal small_grams
+        decimal medium_grams
+        decimal large_grams
+        boolean reviewed
+        string mapping_note
+    }
+    food_nutrition_mappings {
+        uuid id PK
+        uuid food_class_id FK
+        uuid nutrition_food_id FK
+        boolean is_default
+        string confidence_note
+    }
+    model_versions {
+        uuid id PK
+        string model_name
+        string run_id UK
+        int num_classes
+        string artifact_dir
+        json metrics_json
+        boolean is_production
+    }
+    prediction_history {
+        uuid id PK
+        uuid user_id FK
+        uuid model_version_id FK
+        string image_path
+        string image_sha256
+        json crop_box_json
+        json topk_json
+        decimal top1_score
+        boolean uncertain
+        timestamptz created_at
+    }
+    meal_logs {
+        uuid id PK
+        uuid user_id FK
+        date consumed_on
+        string meal_type
+        string notes
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    meal_items {
+        uuid id PK
+        uuid meal_log_id FK
+        uuid confirmed_food_class_id FK
+        uuid prediction_id FK
+        string custom_food_name
+        string portion_size
+        decimal estimated_grams
+        decimal kcal_per_100g_snapshot
+        decimal estimated_kcal
+        string nutrition_source_snapshot
+        string calculation_method
+        boolean is_user_corrected
+        timestamptz created_at
+        timestamptz updated_at
+    }

@@ -1,0 +1,21 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+flowchart TB
+    USER["User / Browser"]
+    subgraph APP["Python Application - Modular Monolith"]
+        UI["Streamlit UI<br/>Home / Recognize / Diary / Dashboard / About"]
+        SVC["Application Services<br/>Image / Inference / Nutrition / Meal / Dashboard"]
+        ORM["Repositories + SQLAlchemy<br/>Transaction / Unit of Work"]
+        PRED["PyTorch Runtime<br/>EfficientNet-B0 or selected model"]
+    end
+    DB[("PostgreSQL<br/>App records")]
+    FS[("Filesystem<br/>Model artifacts + optional user uploads")]
+    OFF["Offline pipeline<br/>Food-101 → train → evaluate"]
+
+    USER <-->|"Streamlit interaction"| UI
+    UI -->|"Internal Python calls"| SVC
+    SVC -->|"CRUD and queries"| ORM
+    ORM <-->|"SQL"| DB
+    SVC -->|"Classify crop"| PRED
+    PRED -->|"Read checkpoint + label map"| FS
+    OFF -->|"Publish approved model release"| FS
+    SVC -->|"Temporary file read/write if enabled"| FS

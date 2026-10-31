@@ -1,0 +1,1 @@
+"""Food assistant services package."""

@@ -1,0 +1,17 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+gantt
+    title Project 18 - 10 week implementation plan (proposed)
+    dateFormat YYYY-MM-DD
+    axisFormat %d/%m
+    section Foundation
+    Setup and architecture          :a1, 2026-11-02, 7d
+    Dataset and EDA                :a2, after a1, 7d
+    section ML Experiments
+    HOG and SVM baseline           :a3, after a2, 7d
+    ResNet18 and EfficientNet      :a4, after a3, 14d
+    section App and Database
+    PostgreSQL and nutrition       :a5, after a3, 7d
+    Streamlit MVP                  :a6, after a4, 7d
+    section Validation
+    Robustness and error analysis  :a7, after a6, 7d
+    Report diagrams and delivery   :a8, after a7, 14d

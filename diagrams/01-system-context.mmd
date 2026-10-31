@@ -1,0 +1,15 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+flowchart LR
+    U["Người dùng cuối"]
+    R["Developer / Researcher"]
+    C["Nutrition Curator"]
+    SYS["Food Recognition & Dietary Assistant<br/>MVP local/demo"]
+    FOOD["Food-101<br/>dataset ảnh và nhãn"]
+    NUT["Nguồn dinh dưỡng<br/>bảng tham khảo có xuất xứ"]
+
+    U -->|"Upload, crop, xác nhận, lưu và xem bữa ăn"| SYS
+    SYS -->|"Dự đoán món, kcal ước tính, nhật ký"| U
+    R -->|"Train, evaluate, chọn model release"| SYS
+    FOOD -->|"Ảnh/nhãn dùng cho offline training"| R
+    NUT -->|"Dữ liệu tham chiếu kcal/100g"| C
+    C -->|"Review nutrition mapping/portion"| SYS

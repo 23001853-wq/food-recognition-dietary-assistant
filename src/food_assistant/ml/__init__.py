@@ -1,0 +1,1 @@
+"""Food assistant ml package."""

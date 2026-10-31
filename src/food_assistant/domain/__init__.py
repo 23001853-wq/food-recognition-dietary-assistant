@@ -1,0 +1,1 @@
+"""Food assistant domain package."""

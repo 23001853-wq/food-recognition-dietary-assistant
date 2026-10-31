@@ -1,0 +1,14 @@
+# Proposed POC subset; review and freeze before creating manifests.
+version: poc-v1
+rationale: "Ten varied Food-101 dishes for initial resource-limited experiments."
+classes:
+  - apple_pie
+  - caesar_salad
+  - cheesecake
+  - chicken_curry
+  - french_fries
+  - hamburger
+  - ice_cream
+  - omelette
+  - pizza
+  - sushi

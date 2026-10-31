@@ -1,0 +1,15 @@
+# Proposed starting settings, not a trained model.
+model_name: hog_svm
+data_config: configs/data.yaml
+seed: 42
+image_size: [128, 128]
+grayscale: true
+hog:
+  orientations: 9
+  pixels_per_cell: [8, 8]
+  cells_per_block: [2, 2]
+classifier: LinearSVC
+standard_scaler: true
+c_candidates: [0.1, 1.0, 10.0]
+selection_metric: macro_f1
+tuning_split: val

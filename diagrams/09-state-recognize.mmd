@@ -1,0 +1,19 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+stateDiagram-v2
+    [*] --> EMPTY
+    EMPTY --> IMAGE_READY: upload valid image
+    EMPTY --> ERROR: invalid image
+    IMAGE_READY --> ANALYZING: click Analyze
+    IMAGE_READY --> EMPTY: clear image
+    ANALYZING --> RESULT_READY: model returns top-k
+    ANALYZING --> ERROR: model/inference error
+    RESULT_READY --> NEEDS_CONFIRMATION: low score or unknown
+    RESULT_READY --> RESULT_READY: user edits label/portion
+    NEEDS_CONFIRMATION --> RESULT_READY: user confirms corrected food
+    RESULT_READY --> SAVED: DB commit success
+    RESULT_READY --> ERROR: save error
+    RESULT_READY --> IMAGE_READY: change image or crop
+    SAVED --> IMAGE_READY: analyze another crop
+    SAVED --> EMPTY: clear/reset
+    ERROR --> IMAGE_READY: retry with valid image
+    ERROR --> EMPTY: reset

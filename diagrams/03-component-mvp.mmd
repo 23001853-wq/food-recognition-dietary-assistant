@@ -1,0 +1,28 @@
+%% Planned design copied from PLAN.md section 23; not implementation evidence.
+flowchart LR
+    UI["Streamlit Pages"]
+    IMG["ImageService"]
+    CROP["CropService"]
+    INF["InferenceService"]
+    MODEL["ModelRegistry"]
+    NUT["NutritionService"]
+    MEAL["MealService"]
+    DASH["DashboardService"]
+    REPO["Repository Layer"]
+    DB[("PostgreSQL")]
+    ART[("Production Artifact")]
+
+    UI --> IMG
+    UI --> CROP
+    UI --> INF
+    UI --> NUT
+    UI --> MEAL
+    UI --> DASH
+    IMG --> CROP
+    INF --> MODEL
+    MODEL --> ART
+    NUT --> REPO
+    MEAL --> NUT
+    MEAL --> REPO
+    DASH --> REPO
+    REPO --> DB
