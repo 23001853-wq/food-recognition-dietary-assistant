@@ -1,20 +1,9 @@
-%% Planned design copied from PLAN.md section 23; not implementation evidence.
+%% Architecture v2; see PLAN.md and implementation status.
 flowchart LR
-    USER["Web / Mobile Users"]
-    FE["React or Mobile Client<br/>Future"]
-    API["FastAPI REST<br/>Future"]
-    AUTH["Auth & Authorization<br/>Future"]
-    SV["Application Services"]
-    AI["Model Inference Runtime"]
-    DB[("PostgreSQL")]
-    OBJ[("Object Storage<br/>Future")]
-    OBS["Monitoring / Audit<br/>Future"]
-    USER --> FE
-    FE -->|"HTTPS / JSON / multipart"| API
-    API --> AUTH
-    API --> SV
-    SV --> AI
-    SV --> DB
-    SV --> OBJ
-    API --> OBS
-    AI --> OBS
+    NOTE["FUTURE ARCHITECTURE - NOT IMPLEMENTED IN MVP"]
+    UI["Future React/mobile clients"] --> API["Existing FastAPI services"]
+    API --> AUTH["Future authentication and authorization"]
+    API --> OBJ[("Future object storage")]
+    API --> OBS["Future multi-user monitoring"]
+    API --> ML["Future detection / segmentation only with suitable training data"]
+    NOTE -.-> UI

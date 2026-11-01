@@ -1,0 +1,233 @@
+{
+  "curation_version": "poc-nutrition-v2",
+  "class_keys_from_manifest": [
+    "apple_pie",
+    "caesar_salad",
+    "cheesecake",
+    "chicken_curry",
+    "french_fries",
+    "hamburger",
+    "ice_cream",
+    "omelette",
+    "pizza",
+    "sushi"
+  ],
+  "available": [
+    "apple_pie",
+    "caesar_salad",
+    "cheesecake",
+    "chicken_curry",
+    "french_fries",
+    "hamburger",
+    "ice_cream",
+    "omelette",
+    "pizza",
+    "sushi"
+  ],
+  "unavailable": [],
+  "portion_basis": "design_assumption",
+  "sources": {
+    "sr_legacy": {
+      "download_url": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+      "archive_sha256": "b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0",
+      "checksum_kind": "computed local integrity, not an official published checksum"
+    },
+    "fndds": {
+      "download_url": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_json_2024-10-31.zip",
+      "archive_sha256": "dfb06ae7ddc397ccd570b91c14b75438ab2ba39f64f22d321f61d4a52a77f3eb",
+      "checksum_kind": "computed local integrity, not an official published checksum"
+    }
+  },
+  "records": [
+    {
+      "class_key": "apple_pie",
+      "fdc_id": "175011",
+      "description": "Pie, apple, commercially prepared, enriched flour",
+      "dataset": "sr_legacy",
+      "per_100g": {
+        "protein_per_100g": "1.9",
+        "fat_per_100g": "11",
+        "carbohydrate_per_100g": "34",
+        "kcal_per_100g": "237"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu bánh táo thương mại dùng bột tăng cường vi chất; khác công thức, vỏ bánh hoặc nhân có thể thay đổi dinh dưỡng.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "caesar_salad",
+      "fdc_id": "2709591",
+      "description": "Caesar salad, with romaine, no dressing",
+      "dataset": "fndds",
+      "per_100g": {
+        "protein_per_100g": "4.0",
+        "fat_per_100g": "3.41",
+        "carbohydrate_per_100g": "7.49",
+        "kcal_per_100g": "77.0"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "CHỈ tham chiếu Caesar salad KHÔNG SỐT. Nếu món có sốt, thịt gà hoặc topping thêm, hồ sơ này chưa bao gồm các thành phần đó; cần chọn/nhập giá trị phù hợp thay vì coi là toàn bộ món.",
+        "match_quality": "conditional_no_dressing",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "cheesecake",
+      "fdc_id": "172711",
+      "description": "Cake, cheesecake, commercially prepared",
+      "dataset": "sr_legacy",
+      "per_100g": {
+        "fat_per_100g": "22.5",
+        "carbohydrate_per_100g": "25.5",
+        "kcal_per_100g": "321",
+        "protein_per_100g": "5.5"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu cheesecake thương mại; topping, đế bánh và công thức kem phô mai có thể khác.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "chicken_curry",
+      "fdc_id": "2706437",
+      "description": "Chicken curry",
+      "dataset": "fndds",
+      "per_100g": {
+        "protein_per_100g": "6.48",
+        "fat_per_100g": "6.48",
+        "carbohydrate_per_100g": "6.54",
+        "kcal_per_100g": "107"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu Chicken curry trong khảo sát USDA, không bao gồm cơm ăn kèm. Tỷ lệ thịt, nước sốt, dầu và nước cốt dừa của món thực tế có thể rất khác.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "french_fries",
+      "fdc_id": "170698",
+      "description": "Fast foods, potato, french fried in vegetable oil",
+      "dataset": "sr_legacy",
+      "per_100g": {
+        "protein_per_100g": "3.43",
+        "fat_per_100g": "14.73",
+        "carbohydrate_per_100g": "41.44",
+        "kcal_per_100g": "312"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu khoai tây chiên dầu thực vật, không gồm sốt chấm; khoai nướng/nồi chiên không dầu có thể khác.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "hamburger",
+      "fdc_id": "170694",
+      "description": "Fast foods, hamburger; single, regular patty; with condiments",
+      "dataset": "sr_legacy",
+      "per_100g": {
+        "protein_per_100g": "13.3",
+        "fat_per_100g": "10.18",
+        "carbohydrate_per_100g": "29.57",
+        "kcal_per_100g": "263"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu hamburger gồm bánh mì, một patty thường và gia vị; không đại diện burger nhiều tầng, thêm phô mai hoặc nhiều mayonnaise.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "ice_cream",
+      "fdc_id": "167575",
+      "description": "Ice creams, vanilla",
+      "dataset": "sr_legacy",
+      "per_100g": {
+        "carbohydrate_per_100g": "23.6",
+        "kcal_per_100g": "207",
+        "fat_per_100g": "11",
+        "protein_per_100g": "3.5"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu kem vanilla thông thường; không gồm vỏ ốc quế/topping, không đại diện kem ít béo hoặc hương vị khác.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "omelette",
+      "fdc_id": "172185",
+      "description": "Egg, whole, cooked, omelet",
+      "dataset": "sr_legacy",
+      "per_100g": {
+        "protein_per_100g": "10.57",
+        "fat_per_100g": "11.66",
+        "carbohydrate_per_100g": "0.64",
+        "kcal_per_100g": "154"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu omelet trứng nguyên quả đã nấu; nhân thịt, phô mai và dầu/bơ thêm có thể làm thay đổi giá trị.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "pizza",
+      "fdc_id": "170317",
+      "description": "Pizza, cheese topping, regular crust, frozen, cooked",
+      "dataset": "sr_legacy",
+      "per_100g": {
+        "fat_per_100g": "12.28",
+        "protein_per_100g": "10.36",
+        "carbohydrate_per_100g": "29.02",
+        "kcal_per_100g": "268"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu pizza phô mai đế thường đã nấu; đế dày, thịt và topping khác có thể làm thay đổi giá trị.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    },
+    {
+      "class_key": "sushi",
+      "fdc_id": "2708959",
+      "description": "Sushi, NFS",
+      "dataset": "fndds",
+      "per_100g": {
+        "protein_per_100g": "2.92",
+        "fat_per_100g": "0.67",
+        "carbohydrate_per_100g": "18.4",
+        "kcal_per_100g": "94.0"
+      },
+      "notes": {
+        "curation_version": "poc-nutrition-v2",
+        "match_note": "Tham chiếu sushi chưa xác định loại trong khảo sát USDA (NFS); không đại diện chính xác từng loại cuộn, sushi chiên hoặc thêm sốt mayonnaise.",
+        "match_quality": "representative",
+        "portion_basis": "design_assumption",
+        "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế."
+      }
+    }
+  ]
+}

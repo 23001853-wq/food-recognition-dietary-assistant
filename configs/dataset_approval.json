@@ -1,0 +1,13 @@
+{
+  "dataset": "food101",
+  "academic_approval": "confirmed_by_user",
+  "academic_approval_date": "2026-10-31",
+  "source_url": "https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/",
+  "archive_url": "https://data.vision.ee.ethz.ch/cvl/food-101.tar.gz",
+  "use": "local academic research only; no redistribution of images",
+  "rights_status": "Archive license inspected: scientific fair use; any other use requires picture-owner permission",
+  "citation": "Bossard, Guillaumin, Van Gool. Food-101. ECCV 2014.",
+  "official_sha256": null,
+  "license_file": "food-101/license_agreement.txt",
+  "license_verified_date": "2026-10-31"
+}

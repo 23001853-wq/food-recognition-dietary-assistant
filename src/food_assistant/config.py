@@ -1,12 +1,13 @@
 """Environment configuration; relative paths resolve against the project root."""
 
+import os
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(os.environ.get("FOOD_ASSISTANT_ROOT", Path(__file__).resolve().parents[2]))
 
 
 class Settings(BaseSettings):
@@ -23,8 +24,18 @@ class Settings(BaseSettings):
     save_uploaded_images: bool = False
     save_prediction_history: bool = False
     inference_device: str = "auto"
+    api_base_url: str = "http://127.0.0.1:8000"
+    allow_mock_ai: bool = False
+    allow_smoke_models: bool = False
+    default_model: str = "production"
+    cors_origins: list[str] = ["http://localhost:8501", "http://127.0.0.1:8501"]
+    artifact_root: Path = PROJECT_ROOT / "artifacts/models"
 
-    @field_validator("model_pointer", "upload_dir", "temp_dir")
+    def model_post_init(self, __context) -> None:
+        if self.app_env == "production" and self.allow_mock_ai:
+            raise ValueError("Mock AI is forbidden in production")
+
+    @field_validator("model_pointer", "upload_dir", "temp_dir", "artifact_root")
     @classmethod
     def resolve_project_path(cls, value: Path) -> Path:
         return value if value.is_absolute() else PROJECT_ROOT / value

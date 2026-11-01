@@ -5,10 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "food-recognition-dietary-assistant"
 version = "0.1.0"
-description = "Food classification and portion-aware meal diary (MVP scaffold)"
+description = "Food classification API, meal diary and reproducible ML pipelines"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
+    "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "httpx>=0.28,<1",
+    "python-multipart>=0.0.20,<1", "pydantic>=2.9,<3",
     "streamlit>=1.36,<2",
     "SQLAlchemy>=2,<3",
     "alembic>=1.13,<2",
@@ -23,14 +25,18 @@ dependencies = [
 
 [project.optional-dependencies]
 ml = [
+    "psutil>=7,<8",
     "torch>=2,<3", "torchvision>=0.16,<1", "opencv-python-headless>=4,<5",
     "scikit-learn>=1.3,<2", "scikit-image>=0.22,<1", "numpy>=1.26,<3",
     "matplotlib>=3.8,<4", "tensorboard>=2,<3", "joblib>=1.3,<2",
 ]
-dev = ["pytest>=8,<9", "ruff>=0.6,<1"]
+dev = ["pytest>=8,<10", "ruff>=0.6,<1", "jsonschema>=4,<5", "psutil>=7,<8"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"food_assistant.ui" = ["assets/*.jpg", "assets/*.svg"]
 
 [tool.ruff]
 target-version = "py311"
@@ -43,6 +49,10 @@ select = ["E", "F", "I", "UP"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 markers = [
+    "ml: CPU ML smoke tests on synthetic data, no external dataset or weights",
+    "gpu: requires CUDA runtime",
+    "dataset: requires approved real dataset",
+    "checkpoint: requires trusted trained checkpoint",
     "integration: requires a separate PostgreSQL test database",
     "smoke: requires implemented application and a trusted model release",
 ]

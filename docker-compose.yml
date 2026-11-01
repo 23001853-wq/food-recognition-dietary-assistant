@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16
+    mem_limit: 512m
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-food_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
@@ -12,6 +13,48 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    image: food-assistant-runtime:local
+    mem_limit: 768m
+    user: "1000:1000"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-food_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-food_assistant}
+    command: ["sh", "-c", "alembic upgrade head && python scripts/seed_database.py && uvicorn food_assistant.api.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+      - ./storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    image: food-assistant-runtime:local
+    mem_limit: 768m
+    user: "1000:1000"
+    env_file: .env
+    environment:
+      API_BASE_URL: http://backend:8000
+    command: ["streamlit", "run", "src/food_assistant/app.py", "--server.address=0.0.0.0"]
+    ports:
+      - "127.0.0.1:8501:8501"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 10s
       timeout: 5s
       retries: 10
 

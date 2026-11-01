@@ -1,166 +1,125 @@
-# Data Dictionary
+# Current data dictionary
 
-Thiết kế dự kiến từ PLAN.md; bộ khung chưa triển khai nghiệp vụ.
+Generated from SQLAlchemy ORM; see DATABASE_GUIDE.md for design rules.
 
-## 12. DATABASE POSTGRESQL — ENTITY, COLUMN, RULE
+## food_classes
 
-### 12.1. Nguyên tắc
-
-- Dùng PostgreSQL làm DB duy nhất cho ứng dụng nghiệp vụ.
-- Tạo schema qua SQLAlchemy ORM + Alembic migrations.
-- Mọi ID nghiệp vụ là UUID; có thể dùng `uuid.uuid4()` từ Python cho tính tương thích.
-- Timestamps dùng `TIMESTAMP WITH TIME ZONE`; phân biệt `created_at`, `updated_at`.
-- `NUMERIC(10,2)` cho gram/kcal, hạn chế lỗi tiền số float trong thống kê đơn giản.
-- DB lưu đường dẫn ảnh tương đối, metadata, không lưu binary toàn bộ Food-101 vào DB.
-- **Single-user MVP:** tạo `demo_user` cố định qua seed; `user_id` trong `meal_logs` để chuẩn bị multi-user nhưng chưa có tính năng đăng nhập. Không tuyên bố dữ liệu đã cách ly an toàn giữa nhiều user.
-- `prediction_history` là lịch sử inference (nếu người dùng đồng ý lưu); `meal_items` là bản ghi đã xác nhận. Không nhầm prediction chưa xác nhận với món đã ăn.
-
-### 12.2. Bảng `users`
-
-| Column | Type | Constraint | Ý nghĩa |
+| Column | Type | Nullable | Keys |
 |---|---|---|---|
-| id | UUID | PK | User ID |
-| display_name | VARCHAR(120) | NOT NULL | Demo user name |
-| email | VARCHAR(255) | NULL, UNIQUE | Không bắt buộc MVP |
-| created_at | TIMESTAMPTZ | NOT NULL | Created UTC |
+| dataset_key | VARCHAR(150) | False |  |
+| display_name_en | VARCHAR(200) | False |  |
+| display_name_vi | VARCHAR(200) | True |  |
+| label_version | VARCHAR(100) | False |  |
+| is_active | BOOLEAN | False |  |
+| id | UUID | False | PK |
+| created_at | DATETIME | False |  |
 
-### 12.3. Bảng `food_classes`
+## model_versions
 
-| Column | Type | Constraint | Ý nghĩa |
+| Column | Type | Nullable | Keys |
 |---|---|---|---|
-| id | UUID | PK | Food class UUID |
-| dataset_key | VARCHAR(150) | UNIQUE, NOT NULL | `pizza`, `sushi`, ... |
-| display_name_en | VARCHAR(200) | NOT NULL | Food class English |
-| display_name_vi | VARCHAR(200) | NULL | Tên hiển thị Việt |
-| is_active | BOOLEAN | DEFAULT true | Cho phép chọn trong UI |
-| created_at | TIMESTAMPTZ | NOT NULL | Created |
+| model_name | VARCHAR(80) | False |  |
+| run_id | VARCHAR(100) | False |  |
+| dataset_version | VARCHAR(100) | False |  |
+| num_classes | INTEGER | False |  |
+| artifact_dir | TEXT | False |  |
+| metrics_json | JSONB | True |  |
+| is_production | BOOLEAN | False |  |
+| id | UUID | False | PK |
+| created_at | DATETIME | False |  |
 
-**Không** đặt `class_idx` trên `food_classes` như chân lý độc lập; class index thuộc **model release**, có thể đổi khi train lại. Lấy từ `model_class_labels` hoặc artifact mapping.
+## nutrition_foods
 
-### 12.4. Bảng `nutrition_foods`
-
-| Column | Type | Constraint | Ý nghĩa |
+| Column | Type | Nullable | Keys |
 |---|---|---|---|
-| id | UUID | PK | Profile UUID |
-| name | VARCHAR(200) | NOT NULL | Tên mục dinh dưỡng |
-| kcal_per_100g | NUMERIC(10,2) | NULL, CHECK >= 0 | Kcal tham khảo |
-| source_name | VARCHAR(200) | NOT NULL | Ví dụ USDA FDC |
-| source_record_id | VARCHAR(120) | NULL | External FDC ID nếu có |
-| provenance_url | TEXT | NULL | Link nguồn |
-| retrieved_at | TIMESTAMPTZ | NULL | Ngày truy xuất |
-| small_grams | NUMERIC(10,2) | NULL, CHECK > 0 | Gram giả định cho S |
-| medium_grams | NUMERIC(10,2) | NULL, CHECK > 0 | Gram giả định cho M |
-| large_grams | NUMERIC(10,2) | NULL, CHECK > 0 | Gram giả định cho L |
-| mapping_note | TEXT | NULL | Giả định/công thức |
-| reviewed | BOOLEAN | DEFAULT false | Đã review mapping/nguồn |
-| created_at | TIMESTAMPTZ | NOT NULL | Created |
-| updated_at | TIMESTAMPTZ | NOT NULL | Last updated |
+| name | VARCHAR(200) | False |  |
+| kcal_per_100g | NUMERIC(10, 2) | True |  |
+| protein_per_100g | NUMERIC(10, 2) | True |  |
+| carbohydrate_per_100g | NUMERIC(10, 2) | True |  |
+| fat_per_100g | NUMERIC(10, 2) | True |  |
+| source_name | VARCHAR(200) | False |  |
+| source_record_id | VARCHAR(120) | True |  |
+| provenance_url | TEXT | True |  |
+| source_version | VARCHAR(100) | False |  |
+| unit | VARCHAR(20) | False |  |
+| retrieved_at | DATETIME | True |  |
+| small_grams | NUMERIC(10, 2) | True |  |
+| medium_grams | NUMERIC(10, 2) | True |  |
+| large_grams | NUMERIC(10, 2) | True |  |
+| mapping_note | TEXT | True |  |
+| reviewed | BOOLEAN | False |  |
+| updated_at | DATETIME | False |  |
+| id | UUID | False | PK |
+| created_at | DATETIME | False |  |
 
-### 12.5. Bảng `food_nutrition_mappings`
+## users
 
-| Column | Type | Constraint | Ý nghĩa |
+| Column | Type | Nullable | Keys |
 |---|---|---|---|
-| id | UUID | PK | Mapping UUID |
-| food_class_id | UUID | FK → food_classes | Class của model |
-| nutrition_food_id | UUID | FK → nutrition_foods | Profile lựa chọn |
-| is_default | BOOLEAN | NOT NULL DEFAULT false | Profile mặc định |
-| confidence_note | TEXT | NULL | Ghi chú mapping |
-| created_at | TIMESTAMPTZ | NOT NULL | Created |
+| display_name | VARCHAR(120) | False |  |
+| email | VARCHAR(255) | True |  |
+| id | UUID | False | PK |
+| created_at | DATETIME | False |  |
 
-Unique `(food_class_id, nutrition_food_id)`; tạo **partial unique index** đảm bảo tối đa một row `is_default=true` mỗi `food_class_id`. Chỉ sử dụng auto lookup khi `nutrition_foods.reviewed=true` và `kcal_per_100g IS NOT NULL`.
+## food_nutrition_mappings
 
-### 12.6. Bảng `model_versions`
-
-| Column | Type | Constraint | Ý nghĩa |
+| Column | Type | Nullable | Keys |
 |---|---|---|---|
-| id | UUID | PK | Release UUID |
-| model_name | VARCHAR(80) | NOT NULL | `resnet18`, `efficientnet_b0`, `hog_svm` |
-| run_id | VARCHAR(100) | UNIQUE, NOT NULL | Training run |
-| num_classes | INT | CHECK > 0 | Số class |
-| artifact_dir | TEXT | NOT NULL | Artifact local path |
-| metrics_json | JSONB | NULL | Các metrics đã công bố |
-| is_production | BOOLEAN | NOT NULL DEFAULT false | Model chạy demo |
-| created_at | TIMESTAMPTZ | NOT NULL | Created |
+| food_class_id | UUID | False | FK → food_classes.id |
+| nutrition_food_id | UUID | False | FK → nutrition_foods.id |
+| is_default | BOOLEAN | False |  |
+| confidence_note | TEXT | True |  |
+| id | UUID | False | PK |
+| created_at | DATETIME | False |  |
 
-Chỉ tối đa một production model trong DB (`partial unique index` trên constant `is_production=true`), đồng bộ với production pointer file theo thủ tục release. **MVP ưu tiên pointer file là nguồn model runtime**, DB chỉ để audit.
+## meal_logs
 
-### 12.7. Bảng `prediction_history`
-
-| Column | Type | Constraint | Ý nghĩa |
+| Column | Type | Nullable | Keys |
 |---|---|---|---|
-| id | UUID | PK | Prediction event |
-| user_id | UUID | FK → users | Demo user |
-| model_version_id | UUID | FK → model_versions | Provenance |
-| image_path | TEXT | NULL | Nếu user cho phép lưu ảnh |
-| image_sha256 | VARCHAR(64) | NULL | Optional fingerprint |
-| crop_box_json | JSONB | NULL | Normalized crop coordinates |
-| topk_json | JSONB | NOT NULL | `[{dataset_key, score}, ...]` |
-| top1_score | NUMERIC(7,6) | NULL | Raw softmax score |
-| uncertain | BOOLEAN | NOT NULL DEFAULT false | Theo threshold calibrated |
-| created_at | TIMESTAMPTZ | NOT NULL | Inference time |
+| user_id | UUID | False | FK → users.id |
+| client_request_id | UUID | False |  |
+| request_hash | VARCHAR(64) | False |  |
+| consumed_on | DATE | False |  |
+| meal_type | VARCHAR(20) | False |  |
+| notes | TEXT | True |  |
+| updated_at | DATETIME | False |  |
+| id | UUID | False | PK |
+| created_at | DATETIME | False |  |
 
-`prediction_history` không bắt buộc ghi với mỗi infer; có thể thiết lập `SAVE_PREDICTION_HISTORY=false` mặc định để hạn chế lưu ảnh/data. Nếu lưu prediction, yêu cầu về privacy áp dụng cho cả metadata.
+## prediction_history
 
-### 12.8. Bảng `meal_logs`
-
-| Column | Type | Constraint | Ý nghĩa |
+| Column | Type | Nullable | Keys |
 |---|---|---|---|
-| id | UUID | PK | Meal log UUID |
-| user_id | UUID | FK → users | Owner |
-| consumed_on | DATE | NOT NULL | Ngày ăn (địa phương) |
-| meal_type | VARCHAR(20) | CHECK enum values | breakfast/lunch/dinner/snack |
-| notes | TEXT | NULL | Ghi chú bữa |
-| created_at | TIMESTAMPTZ | NOT NULL | Created |
-| updated_at | TIMESTAMPTZ | NOT NULL | Updated |
+| user_id | UUID | False | FK → users.id |
+| model_version_id | UUID | True | FK → model_versions.id |
+| image_path | TEXT | True |  |
+| image_sha256 | VARCHAR(64) | True |  |
+| crop_box_json | JSONB | True |  |
+| response_json | JSONB | False |  |
+| is_mock | BOOLEAN | False |  |
+| id | UUID | False | PK |
+| created_at | DATETIME | False |  |
 
-Một meal log có nhiều `meal_items`. Có thể tạo nhiều logs cùng `consumed_on + meal_type` nếu thực tế ăn nhiều bữa phụ; không unique cặp ngày/bữa.
+## meal_items
 
-### 12.9. Bảng `meal_items`
-
-| Column | Type | Constraint | Ý nghĩa |
+| Column | Type | Nullable | Keys |
 |---|---|---|---|
-| id | UUID | PK | Meal item UUID |
-| meal_log_id | UUID | FK → meal_logs (ON DELETE CASCADE) | Bữa chứa item |
-| confirmed_food_class_id | UUID | FK → food_classes, NULL | Class đã xác nhận |
-| custom_food_name | VARCHAR(200) | NULL | Món ngoài danh sách |
-| prediction_id | UUID | FK → prediction_history, NULL | Liên kết dự đoán gốc |
-| portion_size | VARCHAR(20) | CHECK S/M/L/custom | Loại portion |
-| estimated_grams | NUMERIC(10,2) | NULL, CHECK > 0 | Gram giả định/nhập tay |
-| kcal_per_100g_snapshot | NUMERIC(10,2) | NULL, CHECK >= 0 | Kcal tham chiếu tại lúc lưu |
-| estimated_kcal | NUMERIC(10,2) | NULL, CHECK >= 0 | Tổng kcal ước tính |
-| nutrition_source_snapshot | VARCHAR(255) | NULL | Nguồn tại lúc lưu |
-| calculation_method | VARCHAR(30) | NOT NULL | reference_formula/manual/unknown |
-| is_user_corrected | BOOLEAN | NOT NULL DEFAULT false | Đã sửa nhãn AI |
-| notes | TEXT | NULL | Ghi chú món |
-| created_at | TIMESTAMPTZ | NOT NULL | Created |
-| updated_at | TIMESTAMPTZ | NOT NULL | Updated |
-
-Check `(confirmed_food_class_id IS NOT NULL) OR (custom_food_name IS NOT NULL)`; `estimated_grams` có thể NULL nếu chưa có gram đáng tin. `estimated_kcal` chỉ tính được khi đủ dữ liệu; custom manual kcal vẫn được nhưng phải lưu `calculation_method='manual'`.
-
-### 12.10. Quan hệ và thứ tự tạo bảng
-
-1. `users`, `food_classes`, `nutrition_foods`, `model_versions`.
-2. `food_nutrition_mappings`.
-3. `prediction_history`, `meal_logs`.
-4. `meal_items`.
-5. Indexes, seed và constraints.
-
-### 12.11. Indexes
-
-- `users(email)` unique nếu email không null.
-- `food_classes(dataset_key)` unique.
-- `model_versions(run_id)` unique.
-- `meal_logs(user_id, consumed_on DESC)`.
-- `meal_items(meal_log_id)`.
-- `prediction_history(user_id, created_at DESC)`.
-- `food_nutrition_mappings(food_class_id)`.
-- Partial unique indexes cho default nutrition mapping và production model như mục trên.
-
-### 12.12. Migrations và dữ liệu seed
-
-- `alembic revision --autogenerate ...` rồi review migration, `alembic upgrade head`.
-- Seed idempotent: demo user; food_classes lấy từ manifest/class mapping, nutrition references đã có nguồn, default mapping đã duyệt.
-- Không seed toàn bộ 101 món với kcal tự đoán. Cho lớp không mapping → nutrition unavailable.
-- Test DB riêng; không chạy test làm xóa database thực.
-
----
+| meal_log_id | UUID | False | FK → meal_logs.id |
+| confirmed_food_class_id | UUID | True | FK → food_classes.id |
+| custom_food_name | VARCHAR(200) | True |  |
+| prediction_id | UUID | True | FK → prediction_history.id |
+| portion_size | VARCHAR(20) | False |  |
+| estimated_grams | NUMERIC(10, 2) | True |  |
+| kcal_per_100g_snapshot | NUMERIC(10, 2) | True |  |
+| estimated_kcal | NUMERIC(10, 2) | True |  |
+| protein_g | NUMERIC(10, 2) | True |  |
+| carbohydrate_g | NUMERIC(10, 2) | True |  |
+| fat_g | NUMERIC(10, 2) | True |  |
+| nutrition_source_snapshot | TEXT | True |  |
+| nutrition_snapshot | JSONB | True |  |
+| calculation_method | VARCHAR(30) | False |  |
+| is_user_corrected | BOOLEAN | False |  |
+| notes | TEXT | True |  |
+| updated_at | DATETIME | False |  |
+| id | UUID | False | PK |
+| created_at | DATETIME | False |  |

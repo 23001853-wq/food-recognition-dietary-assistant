@@ -240,5 +240,7 @@ __marimo__/
 *.onnx
 *.dump
 *.sql.gz
+/artifacts/pretrained/
+.venv-*/
 .env.*
 !.env.example

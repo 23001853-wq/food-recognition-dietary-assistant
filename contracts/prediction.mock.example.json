@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "prediction_id": "3a729e52-84c6-44e2-ae29-8dbd62c48204",
+  "model": {
+    "name": "mock",
+    "version": "deterministic-v1",
+    "dataset_version": "mock-poc-v1"
+  },
+  "is_mock": true,
+  "predictions": [
+    {
+      "class_id": 9,
+      "class_key": "sushi",
+      "display_name_vi": "Sushi",
+      "score": 0.6
+    },
+    {
+      "class_id": 0,
+      "class_key": "apple_pie",
+      "display_name_vi": "Bánh táo",
+      "score": 0.3
+    },
+    {
+      "class_id": 1,
+      "class_key": "caesar_salad",
+      "display_name_vi": "Salad Caesar",
+      "score": 0.19999999999999998
+    }
+  ],
+  "inference_time_ms": 1.2724000007438008
+}

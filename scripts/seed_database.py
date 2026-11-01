@@ -1,13 +1,15 @@
-"""Seed demo user, artifact classes and reviewed nutrition references. Not implemented yet."""
+"""Seed demo user and food catalog; idempotent and no fabricated nutrition."""
 
-import argparse
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description='Seed demo user, artifact classes and reviewed nutrition references')
-    parser.parse_args()
-    parser.exit(2, "Script not implemented yet; see docs/tasks.md.\n")
-
+from food_assistant.config import Settings
+from food_assistant.persistence.database import make_engine, session_factory
+from food_assistant.persistence.seed import seed
 
 if __name__ == "__main__":
-    main()
+    config = Settings()
+    if config.database_url is None:
+        raise SystemExit("DATABASE_URL required")
+    engine = make_engine(config.database_url.get_secret_value())
+    with session_factory(engine).begin() as session:
+        summary = seed(session)
+    engine.dispose()
+    print("Seed complete (idempotent); reviewed nutrition import:", summary)

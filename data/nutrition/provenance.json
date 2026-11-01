@@ -1,0 +1,6 @@
+{
+  "download_url": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+  "archive_sha256": "b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0",
+  "selected_fdc_id": "170317",
+  "scope": "Representative cooked regular-crust cheese pizza only; other recipes vary. S/M/L = 100/200/300 g is an explicit demo convention, not a USDA serving measurement. Mapping reviewed against the exact USDA description by the implementation agent."
+}

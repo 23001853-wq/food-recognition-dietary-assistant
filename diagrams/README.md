@@ -1,9 +1,8 @@
-# Sơ đồ thiết kế dự kiến
+# Architecture v2 diagrams
 
-Trích nguyên 12 Mermaid source từ PLAN.md mục 23; chưa thay đổi ý nghĩa. Đây là kiến trúc mục tiêu, chưa phải hiện trạng triển khai. Chưa render hoặc xác minh bằng Mermaid runtime; chưa có SVG/PNG.
+D02/D03/D05/D06/D07/D10/D12 updated for FastAPI and current ORM. Other sources retain applicable original research/user-flow designs. D09 is the intended recognition state model, while the UI implements its behavior through session-state flags. Sources have not been rendered/validated by Mermaid runtime; no SVG/PNG is claimed.
 
-**FUTURE ARCHITECTURE — NOT IMPLEMENTED IN MVP** (D12).
-D11 dùng lịch minh họa. ERD cần đối chiếu với ORM khi triển khai. Portion không đo từ ảnh; nutrition cần nguồn; mỗi crop có một món chính.
+**FUTURE ARCHITECTURE — NOT IMPLEMENTED IN MVP** applies to D12 future clients/auth/detection, not to the now-implemented FastAPI backend. D11 dates remain illustrative.
 
 - [01-system-context.mmd](01-system-context.mmd)
 - [02-container-mvp.mmd](02-container-mvp.mmd)

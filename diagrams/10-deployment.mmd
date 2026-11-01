@@ -1,22 +1,10 @@
-%% Planned design copied from PLAN.md section 23; not implementation evidence.
+%% Architecture v2; see PLAN.md and implementation status.
 flowchart TB
-    B["Web Browser<br/>http://localhost:8501"]
-    subgraph HOST["Developer Laptop / Local Machine"]
-        ST["Python venv<br/>Streamlit app & services"]
-        RT["PyTorch inference<br/>CPU or CUDA device"]
-        FILES[("Local Storage<br/>artifacts + optional uploads")]
-        subgraph DBENV["PostgreSQL Environment"]
-            PG[("PostgreSQL<br/>port 5432 - local/internal")]
-            VOL[("Persistent DB volume/data")]
-        end
-        TRAIN["Offline training scripts<br/>CPU/GPU or external Colab"]
-    end
-    B <-->|"User interactions"| ST
-    ST --> RT
-    RT -->|"Load release"| FILES
-    ST <-->|"SQLAlchemy / psycopg"| PG
-    PG --> VOL
-    TRAIN -->|"Release trained model to file storage"| FILES
-
-    NOTES["No public access, no auth in single-user MVP"]
-    ST -.-> NOTES
+    B["Browser: localhost:8501"] --> ST["Streamlit frontend container or Windows venv"]
+    ST -->|HTTP :8000| API["FastAPI backend container or Windows venv"]
+    API -->|SQLAlchemy / psycopg| PG[("PostgreSQL container or local service")]
+    PG --> VOL[("Persistent DB volume")]
+    API --> FS[("Trusted artifact mount / optional uploads")]
+    TR["Separate offline training: CPU/CUDA or Colab"] --> FS
+    NOTE["Loopback host bindings; single-user demo; no public auth"]
+    API -.-> NOTE

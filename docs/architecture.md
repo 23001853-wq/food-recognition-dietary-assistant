@@ -1,73 +1,80 @@
-# Architecture
+# PLAN v2 — Food Recognition & Portion-Aware Dietary Assistant
 
-Thiết kế dự kiến từ PLAN.md; bộ khung chưa triển khai nghiệp vụ.
+Updated 2026-10-31. This supersedes the original architecture at the user's explicit request.
+The full original plan remains in [PLAN_v1_historical.md](PLAN_v1_historical.md) for research detail.
+Status evidence lives in [IMPLEMENTATION_STATUS.md](../IMPLEMENTATION_STATUS.md).
 
-## 11. KIẾN TRÚC HỆ THỐNG
+## Scope and architecture
 
-### 11.1. Kiến trúc MVP chuẩn — Modular Monolith
+Solo developer. Streamlit → HTTP → FastAPI → application services → PostgreSQL.
+The backend calls ImageService, CropService, InferenceService/ModelRegistry,
+NutritionService, MealService and DashboardService. UI never imports SQL/training.
+FastAPI is now part of MVP. React, login, multi-user authorization, detectors and
+segmentation remain future work. Local demo binds ports to loopback.
 
-```text
-┌───────────────────────────────────────────────────────────────┐
-│ Browser                                                       │
-│  Streamlit UI: Recognize / Diary / Dashboard / About          │
-└───────────────────────────┬───────────────────────────────────┘
-                            │ internal Python calls
-                            v
-┌───────────────────────────────────────────────────────────────┐
-│ Application Service Layer (Python)                            │
-│  ImageService | InferenceService | NutritionService            │
-│  MealService  | DashboardService | ModelRegistry              │
-└───────────────┬───────────────────────────────┬───────────────┘
-                │                               │
-                v                               v
-┌──────────────────────────────┐    ┌───────────────────────────┐
-│ AI Runtime                   │    │ PostgreSQL                │
-│ production artifact + PyTorch│    │ meal, classes, nutrition  │
-└──────────────────────────────┘    └───────────────────────────┘
-                │
-                v
-┌──────────────────────────────┐
-│ Local file storage           │
-│ image uploads / artifacts    │
-└──────────────────────────────┘
+Offline: approved dataset → versioned manifests/labels → HOG/SVM, ResNet18,
+EfficientNet-B0 → validation → frozen candidates → independent test report → release.
+Training never runs during an upload. Model selection uses validation macro-F1,
+with measured latency as tie breaker; final test results are reported separately.
 
-Separate offline pipeline:
-Food-101 → split/preprocess → train 3 methods → evaluate → model artifacts
-                                               |
-                                               v
-                                  artifacts/production/current.json
-```
+## Contracts
 
-**Đặc điểm:** Streamlit chỉ điều phối presentation, gọi trực tiếp service Python; không có FastAPI/HTTP nội bộ trong MVP. SQLAlchemy nằm sau repository layer. InferenceService chỉ đọc model artifact và class mapping, không truy cập train dataset khi xử lý yêu cầu.
+- `PredictionResult`: schema_version=1.0, prediction_id UUID, model identity and
+  dataset_version, is_mock, predictions with persisted class_id/class_key, scores and latency.
+- Mock is opt-in, deterministic and explicit. APP_ENV=production rejects ALLOW_MOCK_AI=true.
+- One image/crop → one primary class; multiple dishes require separate manual crops.
+- Missing real checkpoint produces MODEL_NOT_READY, never an automatic mock fallback.
+- Model artifacts have checksums, exact label maps, preprocessing and dataset identity.
+  Only trusted local artifacts are loaded; pickle/joblib are never accepted from uploads.
+- Smoke-only training is never production eligible. Synthetic data is only a test fixture.
+- `client_request_id` makes meal creation idempotent; conflicting bodies return 409.
+- PostgreSQL mutation transactions complete before a successful response.
+- Date filters use the configured local calendar. Database timestamps are UTC-aware.
 
-### 11.2. Module dependencies
+## Persistence
 
-```text
-ui/pages  -> services         -> repositories -> SQLAlchemy/PostgreSQL
-           -> inference       -> model_loader -> model artifacts
-           -> image_processing-> Pillow/OpenCV
-           -> nutrition       -> repositories
-           -> dashboard       -> repositories
-training/scripts -> datasets/transforms/models -> checkpoints & reports
-```
+Preserve original names: users, food_classes, nutrition_foods, food_nutrition_mappings,
+model_versions, prediction_history, meal_logs, meal_items. They are the equivalent
+structures requested as nutrition_facts/portion_profiles/model_registry:
+nutrition_foods holds nutrients per 100g plus nullable S/M/L mass profiles;
+model_versions is the release audit catalog, with the filesystem pointer as runtime truth.
+Food class UUIDs are independent from dataset class indices.
 
-- UI không gọi `torch.load`, `session.execute`, hoặc truy vấn SQL trực tiếp.
-- `training/` không import Streamlit.
-- Inference module không được sửa meal records.
-- Unit test service chạy với fake repositories; integration test chạy PostgreSQL test DB.
-- Có một session DB **trên mỗi transaction**, không giữ shared mutable Session trong cache toàn cục.
+Meal items snapshot kcal/macros, source URL, source/version and mapping assumptions.
+Updating reference data does not rewrite history. Metadata-only meal patches preserve
+snapshots; explicit item edits recalculate using current references after UI confirmation.
+Deleting the last item is implemented as deleting its entire meal transactionally.
 
-### 11.3. Tương lai (không thuộc MVP)
+Prediction response metadata is stored to support retrieval and provenance. Raw images
+are not stored by default. The original SAVE_PREDICTION_HISTORY switch is retired in v2:
+the API persistently stores metadata, while SAVE_UPLOADED_IMAGES controls image retention.
 
-`React/Mobile → FastAPI (REST) → Application Services → PyTorch inference + PostgreSQL + Object Storage`. Cần authentication, authorization, API versioning, rate limiting, file retention và deployment đa instance. **Không** dùng sơ đồ này làm hiện trạng v1.0.
+## Dataset governance
 
-### 11.4. Runtime deployment MVP
+The user confirmed Food-101 academic approval on 2026-10-31. Official ETH source and
+citation are recorded in configs/dataset_approval.json. Use is local academic research;
+do not redistribute source images. Inspect the archive README/terms after download.
+No formal dataset counts are claimed until extraction and audit have completed.
 
-- Windows 11 / Linux host; Python virtual environment chạy Streamlit.
-- PostgreSQL chạy local service hoặc Docker container (Docker Compose được khuyên dùng).
-- `models/` và `artifacts/` là thư mục local có quyền đọc; uploads nằm ở thư mục riêng không nằm trong web root.
-- `.env` chứa `DATABASE_URL`, storage config, timezone, model pointer; không commit credentials.
-- Cấu hình port Streamlit mặc định 8501, PostgreSQL mặc định 5432 (có thể đổi); DB không phơi công khai qua Internet ở demo.
-- Single-user local/demo; nếu deploy public cần thêm authentication và privacy controls trước.
+Food-101 original test is immutable. Validation is stratified from original train only.
+Class order is frozen in labels.json. Manifests include checksums and leakage checks;
+duplicates crossing splits block preparation rather than silently changing the benchmark.
+Custom Vietnamese datasets require rights metadata and capture-group-disjoint splits.
+The proposed Vietnamese classes are configuration, not evidence of collected images.
 
----
+## Nutrition
+
+`kcal = kcal_per_100g × grams / 100`; same scaling for protein/carbohydrate/fat.
+Null stays null; score never scales nutrition. Values are sourced references and
+selected/entered masses, not measurements from image pixels.
+Current curated example: USDA SR Legacy FDC 170317, regular-crust cooked cheese pizza.
+S/M/L 100/200/300g is an explicit demo convention. Other recipes are not equivalent.
+User-entered kcal is marked manual and never relabeled as a sourced estimate.
+
+## Acceptance and remaining work
+
+Mock end-to-end acceptance requires live PostgreSQL, API, UI and CRUD/dashboard tests.
+Formal AI acceptance additionally requires the complete audited dataset, pretrained
+fine-tuning, independent test evaluation on common labels/samples, error analysis and
+a release selected from real evidence. See the implementation/test/evaluation reports.
+No metrics, images or trained-model status may be invented.

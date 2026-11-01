@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "class_count": 10,
+  "counts": {
+    "train": 6000,
+    "val": 1500,
+    "test": 2500
+  },
+  "manifest_sha256": "fcac93e2ca9eb3e179bbb76636d813bcbbffa37b9f9e841a21401d671603bd5a",
+  "official_test_preserved": true,
+  "class_mapping_fixed": true,
+  "full_image_hash_decode_rechecked_this_run": false,
+  "deep_audit_command": "python scripts/verify_dataset.py --manifest-dir data/splits/v1"
+}

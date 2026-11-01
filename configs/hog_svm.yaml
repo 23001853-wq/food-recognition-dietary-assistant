@@ -9,6 +9,9 @@ hog:
   pixels_per_cell: [8, 8]
   cells_per_block: [2, 2]
 classifier: LinearSVC
+dual: false
+max_iter: 2000
+tol: 0.001
 standard_scaler: true
 c_candidates: [0.1, 1.0, 10.0]
 selection_metric: macro_f1

@@ -1,38 +1,33 @@
-%% Planned design copied from PLAN.md section 23; not implementation evidence.
+%% Architecture v2; see PLAN.md and implementation status.
 sequenceDiagram
     actor U as User
-    participant UI as Streamlit Recognize
-    participant IS as ImageService
-    participant CS as CropService
+    participant UI as Streamlit
+    participant API as FastAPI
+    participant IS as ImageService / CropService
     participant IN as InferenceService
     participant MR as ModelRegistry
-    participant FS as Model Artifact FS
-
-    U->>UI: Upload JPG/PNG
-    UI->>IS: validate_and_decode(bytes)
-    alt Invalid/too large image
-        IS-->>UI: INVALID_IMAGE / IMAGE_TOO_LARGE
-        UI-->>U: Hiển thị lỗi, yêu cầu ảnh khác
+    participant DB as PostgreSQL
+    U->>UI: Upload image and choose model/crop
+    UI->>API: POST predictions multipart
+    API->>IS: Validate MIME, bytes, pixels, decode, EXIF and crop
+    alt Invalid image/crop
+        IS-->>API: Validation error
+        API-->>UI: Structured 4xx error
     else Valid image
-        IS-->>UI: PIL RGB image
-        UI-->>U: Preview and crop controls
-        opt User selects crop
-            U->>UI: Choose crop box
-            UI->>CS: crop(image, normalized_box)
-            CS-->>UI: Cropped RGB
+        API->>IN: predict(image, model_name, top_k)
+        alt Explicit mock and development enabled
+            IN-->>API: Deterministic response, is_mock=true
+        else Real model requested
+            IN->>MR: Validate checksums, labels, version, preprocessing
+            alt Missing or inconsistent artifact
+                MR-->>API: MODEL_NOT_READY / ARTIFACT_MISMATCH
+            else Trained artifact
+                MR-->>IN: Loaded release
+                IN-->>API: Top-k scores, is_mock=false
+            end
         end
-        U->>UI: Click Analyze
-        UI->>IN: predict(RGB image/crop, top_k=3)
-        IN->>MR: load_production_model()
-        MR->>FS: Read model, preprocess, label mapping
-        FS-->>MR: Trusted release files
-        MR-->>IN: Model + transforms + labels
-        alt Missing/inconsistent model
-            IN-->>UI: MODEL_NOT_READY / ARTIFACT_MISMATCH
-            UI-->>U: Báo lỗi, không tự tạo kết quả
-        else Model ready
-            Note over IN: eval + inference_mode<br/>resize/normalize match artifact
-            IN-->>UI: Top-3 scores, model run_id, uncertain flag
-            UI-->>U: Show predictions; require confirmation
-        end
+        API->>DB: Store prediction metadata (raw image opt-in)
+        DB-->>API: Commit
+        API-->>UI: Versioned PredictionResult
+        UI-->>U: Require label/portion confirmation
     end

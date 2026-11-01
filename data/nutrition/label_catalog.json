@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "poc-v1",
+  "labels": [
+    {
+      "class_id": 0,
+      "class_key": "apple_pie",
+      "display_name_vi": "Bánh táo",
+      "display_name_en": "apple pie"
+    },
+    {
+      "class_id": 1,
+      "class_key": "caesar_salad",
+      "display_name_vi": "Salad Caesar",
+      "display_name_en": "caesar salad"
+    },
+    {
+      "class_id": 2,
+      "class_key": "cheesecake",
+      "display_name_vi": "Bánh phô mai",
+      "display_name_en": "cheesecake"
+    },
+    {
+      "class_id": 3,
+      "class_key": "chicken_curry",
+      "display_name_vi": "Cà ri gà",
+      "display_name_en": "chicken curry"
+    },
+    {
+      "class_id": 4,
+      "class_key": "french_fries",
+      "display_name_vi": "Khoai tây chiên",
+      "display_name_en": "french fries"
+    },
+    {
+      "class_id": 5,
+      "class_key": "hamburger",
+      "display_name_vi": "Hamburger",
+      "display_name_en": "hamburger"
+    },
+    {
+      "class_id": 6,
+      "class_key": "ice_cream",
+      "display_name_vi": "Kem",
+      "display_name_en": "ice cream"
+    },
+    {
+      "class_id": 7,
+      "class_key": "omelette",
+      "display_name_vi": "Trứng tráng",
+      "display_name_en": "omelette"
+    },
+    {
+      "class_id": 8,
+      "class_key": "pizza",
+      "display_name_vi": "Pizza",
+      "display_name_en": "pizza"
+    },
+    {
+      "class_id": 9,
+      "class_key": "sushi",
+      "display_name_vi": "Sushi",
+      "display_name_en": "sushi"
+    }
+  ]
+}

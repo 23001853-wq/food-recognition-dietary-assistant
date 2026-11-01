@@ -1,41 +1,26 @@
-%% Planned design copied from PLAN.md section 23; not implementation evidence.
+%% Architecture v2; see PLAN.md and implementation status.
 sequenceDiagram
     actor U as User
-    participant UI as Streamlit Recognize
-    participant NS as NutritionService
+    participant UI as Streamlit
+    participant API as FastAPI
     participant MS as MealService
-    participant RP as Repositories
+    participant NS as NutritionService
     participant DB as PostgreSQL
-
-    U->>UI: Chọn/sửa món đã dự đoán
-    U->>UI: Chọn S/M/L hoặc grams
-    UI->>NS: lookup_and_estimate(confirmed_food, portion)
-    NS->>RP: Find reviewed default nutrition profile
-    RP->>DB: SELECT nutrition profile and mapping
-    DB-->>RP: Profile or none
-    RP-->>NS: Profile or none
-    alt No reviewed source / missing grams
-        NS-->>UI: kcal unavailable, request manual grams
-        UI-->>U: Thông báo giới hạn, cho chỉnh tay
-    else Valid reference + grams
-        Note over NS: estimated_kcal = kcal_per_100g × grams / 100
-        NS-->>UI: Estimated kcal + provenance + assumptions
-        UI-->>U: Hiển thị kcal ước tính và nguồn
-    end
-    U->>UI: Confirm and Save
-    UI->>MS: create_meal_with_items(validated_draft)
-    MS->>RP: Begin transaction
-    RP->>DB: INSERT meal_log and meal_items
-    alt DB error
-        DB-->>RP: Error
-        RP->>DB: ROLLBACK
-        RP-->>MS: SAVE_FAILED
-        MS-->>UI: Error
-        UI-->>U: Chưa lưu, có thể thử lại
-    else Commit success
-        RP->>DB: COMMIT
-        DB-->>RP: Committed
-        RP-->>MS: Saved IDs
-        MS-->>UI: Success + IDs
-        UI-->>U: Đã lưu, có thể xem Diary
+    U->>UI: Confirm corrected food, portion and date
+    UI->>API: POST meals with client_request_id
+    API->>MS: Validated draft within transaction
+    MS->>DB: Advisory lock / check retry fingerprint
+    alt Same key, different request
+        MS-->>API: 409 conflict
+    else New meal
+        MS->>NS: Lookup reviewed reference and resolve mass
+        NS-->>MS: Snapshot nutrients/source or unknown/manual
+        MS->>DB: INSERT meal and all items
+        alt Any failure
+            DB-->>API: Rollback
+            API-->>UI: Save failed
+        else Valid transaction
+            DB-->>API: Commit
+            API-->>UI: Saved IDs (201)
+        end
     end

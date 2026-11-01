@@ -1,0 +1,102 @@
+{
+  "$defs": {
+    "ModelIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        },
+        "dataset_version": {
+          "title": "Dataset Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "dataset_version"
+      ],
+      "title": "ModelIdentity",
+      "type": "object"
+    },
+    "Prediction": {
+      "additionalProperties": false,
+      "properties": {
+        "class_id": {
+          "minimum": 0,
+          "title": "Class Id",
+          "type": "integer"
+        },
+        "class_key": {
+          "title": "Class Key",
+          "type": "string"
+        },
+        "display_name_vi": {
+          "title": "Display Name Vi",
+          "type": "string"
+        },
+        "score": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "class_id",
+        "class_key",
+        "display_name_vi",
+        "score"
+      ],
+      "title": "Prediction",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "prediction_id": {
+      "format": "uuid",
+      "title": "Prediction Id",
+      "type": "string"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelIdentity"
+    },
+    "is_mock": {
+      "title": "Is Mock",
+      "type": "boolean"
+    },
+    "predictions": {
+      "items": {
+        "$ref": "#/$defs/Prediction"
+      },
+      "minItems": 1,
+      "title": "Predictions",
+      "type": "array"
+    },
+    "inference_time_ms": {
+      "minimum": 0,
+      "title": "Inference Time Ms",
+      "type": "number"
+    }
+  },
+  "required": [
+    "model",
+    "is_mock",
+    "predictions",
+    "inference_time_ms"
+  ],
+  "title": "PredictionResult",
+  "type": "object"
+}

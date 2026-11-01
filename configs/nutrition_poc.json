@@ -1,0 +1,18 @@
+{
+  "curation_version": "poc-nutrition-v2",
+  "display_names_vi": {"apple_pie":"Bánh táo","caesar_salad":"Salad Caesar","cheesecake":"Bánh phô mai","chicken_curry":"Cà ri gà","french_fries":"Khoai tây chiên","hamburger":"Hamburger","ice_cream":"Kem","omelette":"Trứng tráng","pizza":"Pizza","sushi":"Sushi"},
+  "portion_basis": "design_assumption",
+  "portion_note": "Khối lượng Small/Medium/Large là quy ước thiết kế của dự án để ghi nhật ký, không phải khẩu phần chuẩn USDA và không được đo từ ảnh. Hãy sửa gram nếu biết khối lượng thực tế.",
+  "foods": {
+    "apple_pie": {"dataset": "sr_legacy", "fdc_id": "175011", "expected_description": "Pie, apple, commercially prepared, enriched flour", "grams": [80, 125, 180], "match_note": "Tham chiếu bánh táo thương mại dùng bột tăng cường vi chất; khác công thức, vỏ bánh hoặc nhân có thể thay đổi dinh dưỡng."},
+    "caesar_salad": {"dataset": "fndds", "fdc_id": "2709591", "expected_description": "Caesar salad, with romaine, no dressing", "grams": [100, 200, 300], "match_note": "CHỈ tham chiếu Caesar salad KHÔNG SỐT. Nếu món có sốt, thịt gà hoặc topping thêm, hồ sơ này chưa bao gồm các thành phần đó; cần chọn/nhập giá trị phù hợp thay vì coi là toàn bộ món.", "match_quality": "conditional_no_dressing"},
+    "cheesecake": {"dataset": "sr_legacy", "fdc_id": "172711", "expected_description": "Cake, cheesecake, commercially prepared", "grams": [60, 100, 150], "match_note": "Tham chiếu cheesecake thương mại; topping, đế bánh và công thức kem phô mai có thể khác."},
+    "chicken_curry": {"dataset": "fndds", "fdc_id": "2706437", "expected_description": "Chicken curry", "grams": [150, 250, 350], "match_note": "Tham chiếu Chicken curry trong khảo sát USDA, không bao gồm cơm ăn kèm. Tỷ lệ thịt, nước sốt, dầu và nước cốt dừa của món thực tế có thể rất khác."},
+    "french_fries": {"dataset": "sr_legacy", "fdc_id": "170698", "expected_description": "Fast foods, potato, french fried in vegetable oil", "grams": [70, 120, 180], "match_note": "Tham chiếu khoai tây chiên dầu thực vật, không gồm sốt chấm; khoai nướng/nồi chiên không dầu có thể khác."},
+    "hamburger": {"dataset": "sr_legacy", "fdc_id": "170694", "expected_description": "Fast foods, hamburger; single, regular patty; with condiments", "grams": [100, 150, 220], "match_note": "Tham chiếu hamburger gồm bánh mì, một patty thường và gia vị; không đại diện burger nhiều tầng, thêm phô mai hoặc nhiều mayonnaise."},
+    "ice_cream": {"dataset": "sr_legacy", "fdc_id": "167575", "expected_description": "Ice creams, vanilla", "grams": [50, 100, 150], "match_note": "Tham chiếu kem vanilla thông thường; không gồm vỏ ốc quế/topping, không đại diện kem ít béo hoặc hương vị khác."},
+    "omelette": {"dataset": "sr_legacy", "fdc_id": "172185", "expected_description": "Egg, whole, cooked, omelet", "grams": [60, 120, 180], "match_note": "Tham chiếu omelet trứng nguyên quả đã nấu; nhân thịt, phô mai và dầu/bơ thêm có thể làm thay đổi giá trị."},
+    "pizza": {"dataset": "sr_legacy", "fdc_id": "170317", "expected_description": "Pizza, cheese topping, regular crust, frozen, cooked", "grams": [100, 200, 300], "match_note": "Tham chiếu pizza phô mai đế thường đã nấu; đế dày, thịt và topping khác có thể làm thay đổi giá trị."},
+    "sushi": {"dataset": "fndds", "fdc_id": "2708959", "expected_description": "Sushi, NFS", "grams": [90, 180, 270], "match_note": "Tham chiếu sushi chưa xác định loại trong khảo sát USDA (NFS); không đại diện chính xác từng loại cuộn, sushi chiên hoặc thêm sốt mayonnaise."}
+  }
+}

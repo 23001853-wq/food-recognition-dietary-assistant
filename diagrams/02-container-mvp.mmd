@@ -1,21 +1,13 @@
-%% Planned design copied from PLAN.md section 23; not implementation evidence.
+%% Architecture v2; see PLAN.md and implementation status.
 flowchart TB
-    USER["User / Browser"]
-    subgraph APP["Python Application - Modular Monolith"]
-        UI["Streamlit UI<br/>Home / Recognize / Diary / Dashboard / About"]
-        SVC["Application Services<br/>Image / Inference / Nutrition / Meal / Dashboard"]
-        ORM["Repositories + SQLAlchemy<br/>Transaction / Unit of Work"]
-        PRED["PyTorch Runtime<br/>EfficientNet-B0 or selected model"]
-    end
-    DB[("PostgreSQL<br/>App records")]
-    FS[("Filesystem<br/>Model artifacts + optional user uploads")]
-    OFF["Offline pipeline<br/>Food-101 → train → evaluate"]
-
-    USER <-->|"Streamlit interaction"| UI
-    UI -->|"Internal Python calls"| SVC
-    SVC -->|"CRUD and queries"| ORM
-    ORM <-->|"SQL"| DB
-    SVC -->|"Classify crop"| PRED
-    PRED -->|"Read checkpoint + label map"| FS
-    OFF -->|"Publish approved model release"| FS
-    SVC -->|"Temporary file read/write if enabled"| FS
+    User["Browser"] --> UI["Streamlit frontend"]
+    UI -->|HTTP / JSON / multipart| API["FastAPI backend"]
+    API --> S["Application services"]
+    S --> R["SQLAlchemy repositories / transactions"]
+    R --> PG[("PostgreSQL app data")]
+    S --> I["InferenceService: explicit mock or real release"]
+    I --> FS[("Trusted local artifacts")]
+    OFF["Offline Food-101 training and evaluation"] --> FS
+    S --> N["Reviewed nutrition / nullable estimates"]
+    N --> R
+    S --> U[("Optional upload storage")]

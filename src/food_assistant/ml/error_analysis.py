@@ -1,1 +1,10 @@
-"""Failure taxonomy and separate local domain-shift analysis; planned."""
+from enum import StrEnum
+
+
+class ErrorGroup(StrEnum):
+    VISUAL_SIMILARITY = "VISUAL_SIMILARITY"
+    MIXED_DISH = "MIXED_DISH"
+    PLATING_VARIATION = "PLATING_VARIATION"
+    LIGHTING_OCCLUSION = "LIGHTING_OCCLUSION"
+    DOMAIN_SHIFT = "DOMAIN_SHIFT"
+    UNREVIEWED = "UNREVIEWED"

@@ -1,0 +1,20 @@
+# Optional lower-cost baseline for a NEW run; never alters a running 128px experiment.
+model_name: hog_svm
+expected_num_classes: 10
+expected_dataset_version: poc-v1
+seed: 42
+image_size: [64, 64]
+grayscale: true
+hog:
+  orientations: 9
+  pixels_per_cell: [8, 8]
+  cells_per_block: [2, 2]
+classifier: LinearSVC
+dual: false
+max_iter: 500
+tol: 0.01
+standard_scaler: true
+c_candidates: [0.1, 1.0, 10.0]
+selection_metric: macro_f1
+tuning_split: val
+device: cpu

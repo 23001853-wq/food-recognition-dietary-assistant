@@ -1,0 +1,14 @@
+dataset_name: self_collected_vietnamese
+dataset_version: vietnamese-proposed-v1
+# Proposed labels only. No photos collected or class quality reviewed yet.
+labels:
+  - {class_key: pho_bo, display_name_vi: "Phở bò", display_name_en: "Beef pho"}
+  - {class_key: bun_bo_hue, display_name_vi: "Bún bò Huế", display_name_en: "Hue beef noodle soup"}
+  - {class_key: com_tam, display_name_vi: "Cơm tấm", display_name_en: "Broken rice"}
+  - {class_key: banh_mi, display_name_vi: "Bánh mì", display_name_en: "Vietnamese sandwich"}
+  - {class_key: bun_cha, display_name_vi: "Bún chả", display_name_en: "Grilled pork vermicelli"}
+  - {class_key: banh_xeo, display_name_vi: "Bánh xèo", display_name_en: "Vietnamese savory pancake"}
+  - {class_key: goi_cuon, display_name_vi: "Gỏi cuốn", display_name_en: "Fresh spring rolls"}
+  - {class_key: mi_quang, display_name_vi: "Mì Quảng", display_name_en: "Quang noodles"}
+  - {class_key: banh_cuon, display_name_vi: "Bánh cuốn", display_name_en: "Steamed rice rolls"}
+  - {class_key: xoi_man, display_name_vi: "Xôi mặn", display_name_en: "Savory sticky rice"}

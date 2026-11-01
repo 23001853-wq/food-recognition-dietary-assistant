@@ -1,1 +1,11 @@
-dataset_key,source_name,source_record_id,is_default,confidence_note
+dataset_key,source_name,source_record_id,is_default,confidence_note,source_version
+pizza,USDA FoodData Central SR Legacy,170317,true,"Representative cooked regular-crust cheese pizza only; other recipes vary. S/M/L = 100/200/300 g is an explicit demo convention, not a USDA serving measurement. Mapping reviewed against the exact USDA description by the implementation agent.",SR Legacy 2018-04 (FDC 2019 publication)
+apple_pie,USDA FoodData Central SR Legacy,175011,true,"Tham chiếu bánh táo thương mại dùng bột tăng cường vi chất; khác công thức, vỏ bánh hoặc nhân có thể thay đổi dinh dưỡng.",SR Legacy 2018-04 (FDC 2019 publication)
+caesar_salad,USDA FoodData Central FNDDS,2709591,true,"CHỈ tham chiếu Caesar salad KHÔNG SỐT. Nếu món có sốt, thịt gà hoặc topping thêm, hồ sơ này chưa bao gồm các thành phần đó; cần chọn/nhập giá trị phù hợp thay vì coi là toàn bộ món.",FNDDS 2021-2023 (2024-10-31 release)
+cheesecake,USDA FoodData Central SR Legacy,172711,true,"Tham chiếu cheesecake thương mại; topping, đế bánh và công thức kem phô mai có thể khác.",SR Legacy 2018-04 (FDC 2019 publication)
+chicken_curry,USDA FoodData Central FNDDS,2706437,true,"Tham chiếu Chicken curry trong khảo sát USDA, không bao gồm cơm ăn kèm. Tỷ lệ thịt, nước sốt, dầu và nước cốt dừa của món thực tế có thể rất khác.",FNDDS 2021-2023 (2024-10-31 release)
+french_fries,USDA FoodData Central SR Legacy,170698,true,"Tham chiếu khoai tây chiên dầu thực vật, không gồm sốt chấm; khoai nướng/nồi chiên không dầu có thể khác.",SR Legacy 2018-04 (FDC 2019 publication)
+hamburger,USDA FoodData Central SR Legacy,170694,true,"Tham chiếu hamburger gồm bánh mì, một patty thường và gia vị; không đại diện burger nhiều tầng, thêm phô mai hoặc nhiều mayonnaise.",SR Legacy 2018-04 (FDC 2019 publication)
+ice_cream,USDA FoodData Central SR Legacy,167575,true,"Tham chiếu kem vanilla thông thường; không gồm vỏ ốc quế/topping, không đại diện kem ít béo hoặc hương vị khác.",SR Legacy 2018-04 (FDC 2019 publication)
+omelette,USDA FoodData Central SR Legacy,172185,true,"Tham chiếu omelet trứng nguyên quả đã nấu; nhân thịt, phô mai và dầu/bơ thêm có thể làm thay đổi giá trị.",SR Legacy 2018-04 (FDC 2019 publication)
+sushi,USDA FoodData Central FNDDS,2708959,true,"Tham chiếu sushi chưa xác định loại trong khảo sát USDA (NFS); không đại diện chính xác từng loại cuộn, sushi chiên hoặc thêm sốt mayonnaise.",FNDDS 2021-2023 (2024-10-31 release)

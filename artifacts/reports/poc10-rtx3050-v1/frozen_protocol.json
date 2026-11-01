@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "poc-v1",
+  "num_classes": 10,
+  "manifest_sha256": "fcac93e2ca9eb3e179bbb76636d813bcbbffa37b9f9e841a21401d671603bd5a",
+  "test_samples": 2500,
+  "evaluation_device": "cpu",
+  "selection_metric": "validation_macro_f1",
+  "candidates": [
+    {
+      "model_name": "hog_svm",
+      "run_id": "poc-v1-cpu-budget-v2-primal",
+      "artifact": "D:\\food-recognition-dietary-assistant\\food-recognition-dietary-assistant\\artifacts\\models\\hog_svm\\poc-v1-cpu-budget-v2-primal",
+      "release_files": {
+        "class_to_idx.json": "04bf882018d0f010ad3a499b24cdf14fe21ea1eeec9503423085b487d1fbf65b",
+        "idx_to_class.json": "f6e9da5a40ca30c282e7c12191c36d8a48117fbd9ef1f7565e769320c207f85a",
+        "labels.json": "86153599c48d25f849f15b48693fa2de3ea846802c954c789dd8787fa1fbf1f8",
+        "metrics_val.json": "6e0663166f27589d8431470390e320d973c63883af323a34abfe441d5c9738b5",
+        "model.joblib": "84e50a65a1daa830945230aa0e46391d7be87514a1ddd8dbb76d801f0df5bed5",
+        "model_config.json": "56bbe3876505d67fb3c1ec85929df0d0370fd95cc60eea34c54b2698ffd9794c",
+        "preprocessing.json": "c99b0439e18086254ddb80c33b83ab4d24ebd3c8c9657b0a5ceeb69ef65e6414",
+        "source_commit.txt": "bbeee1164bea90486e4fcb30558bc1e65e8950623d215c63d6f8e36268f7c78d",
+        "train_config.yaml": "5b5254936b693c5afb46cab5e282664a9c89a5487615c1cbe8ad97bb8d452737",
+        "training_history.csv": "89a6875c27184316f80242f51b3514f35217cb2c293d690f318d67ce87effddc"
+      }
+    },
+    {
+      "model_name": "resnet18",
+      "run_id": "poc10-rtx3050-v1",
+      "artifact": "D:\\food-recognition-dietary-assistant\\food-recognition-dietary-assistant\\artifacts\\models\\resnet18\\poc10-rtx3050-v1",
+      "release_files": {
+        "class_to_idx.json": "04bf882018d0f010ad3a499b24cdf14fe21ea1eeec9503423085b487d1fbf65b",
+        "idx_to_class.json": "f6e9da5a40ca30c282e7c12191c36d8a48117fbd9ef1f7565e769320c207f85a",
+        "labels.json": "86153599c48d25f849f15b48693fa2de3ea846802c954c789dd8787fa1fbf1f8",
+        "metrics_val.json": "349aa2ab51d195db2aa7508e577adf4ffc09663e5432c9e1b8fef5dbaeaf126d",
+        "model.pth": "78907e67e7a235343a6e2c1e3541a5c0a3c5b03657d992b74a2f74c37b9b02dd",
+        "model_config.json": "ace7916d08a3a454326b6c19ffe48595b6fa42e054331e7218f5ced9a4161a68",
+        "preprocessing.json": "1886fb8efc6d06a2e572bb73e2a4d3e593bb31c1687b4568f71657e1e205470d",
+        "resume.pth": "ec57e7495a549a76605d0a3b2b7a5967e6bcab80d8ddef510c9d3ab2a9162f9e",
+        "source_commit.txt": "bbeee1164bea90486e4fcb30558bc1e65e8950623d215c63d6f8e36268f7c78d",
+        "source_state.json": "0e53177eafa64c25a8454a5559d4ccfea177b123b4b872ab66aaaa08f992315b",
+        "train_config.yaml": "bf20d6984372828cd7282d3fe67ee8f2b8c9c227bc1e15b7186fc9df84217c0e",
+        "training_history.csv": "7c49c707753ecd300d946cca28ba926e8a3de1afaf09cdd7db01e52af71132f0"
+      }
+    },
+    {
+      "model_name": "efficientnet_b0",
+      "run_id": "poc10-rtx3050-v1",
+      "artifact": "D:\\food-recognition-dietary-assistant\\food-recognition-dietary-assistant\\artifacts\\models\\efficientnet_b0\\poc10-rtx3050-v1",
+      "release_files": {
+        "class_to_idx.json": "04bf882018d0f010ad3a499b24cdf14fe21ea1eeec9503423085b487d1fbf65b",
+        "idx_to_class.json": "f6e9da5a40ca30c282e7c12191c36d8a48117fbd9ef1f7565e769320c207f85a",
+        "labels.json": "86153599c48d25f849f15b48693fa2de3ea846802c954c789dd8787fa1fbf1f8",
+        "metrics_val.json": "30f6b5e0c1f1c79cc7e9e70f5a2dd6c7f817c291df90fc754b13ab2f84976199",
+        "model.pth": "bef80b1525549478c371af66d487f6af953bf5787370bf07c8432a406fe88756",
+        "model_config.json": "281d978d7d13bcb0072e8d11a46b26d85214406d2dd541f513aaf6e24db25ca5",
+        "preprocessing.json": "50dbe28e8eeacfc678e5a5b5e2e22ec34444bb6ec24f0291e8db9b3e3d84da9f",
+        "resume.pth": "9aabc867b941aab3ac635e53454d33fdb079ae2f67f34ad293d2bafbb1beb4d1",
+        "source_commit.txt": "bbeee1164bea90486e4fcb30558bc1e65e8950623d215c63d6f8e36268f7c78d",
+        "source_state.json": "0e53177eafa64c25a8454a5559d4ccfea177b123b4b872ab66aaaa08f992315b",
+        "train_config.yaml": "d464c615340fc2cdce292ad7864dd66304e0922668961da6e90cf23688b04184",
+        "training_history.csv": "13ef991c73cad850aa79ac8bfde748d1706ab0b1b29ff1599f0afd48b2984290"
+      }
+    }
+  ]
+}

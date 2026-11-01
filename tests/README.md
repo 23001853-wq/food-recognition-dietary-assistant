@@ -1,3 +1,3 @@
-# Kiểm thử
+# Tests
 
-Các tệp test là vị trí dành sẵn theo PLAN.md mục 17; chưa có test nghiệp vụ. `pytest` sẽ trả mã 5 vì chưa thu thập test. Kiểm tra cấu trúc bằng `python scripts/smoke_test.py`. Integration tests sẽ dùng TEST_DATABASE_URL riêng.
+See [executed test report](../TEST_REPORT.md). Unit, PostgreSQL integration, HTTP smoke, and CPU ML smoke are implemented. Run pytest from the repository root. Integration tests require TEST_DATABASE_URL with a separate database ending in _test; no application DB reset is allowed. ML smoke tests use temporary synthetic fixtures and random CNN initialization, never external data or pretrained downloads. Install the ml and dev extras to run the complete suite.

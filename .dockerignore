@@ -1,0 +1,13 @@
+.git
+.venv*
+.env
+data/**
+!data/nutrition/
+!data/nutrition/**
+artifacts
+storage
+__pycache__
+.pytest_cache
+.ruff_cache
+*.pth
+*.joblib

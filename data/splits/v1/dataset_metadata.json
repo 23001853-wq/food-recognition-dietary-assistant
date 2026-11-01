@@ -1,0 +1,29 @@
+{
+  "image_count": 10000,
+  "class_count": 10,
+  "split_counts": {
+    "train": 6000,
+    "val": 1500,
+    "test": 2500
+  },
+  "per_class": {
+    "apple_pie": 1000,
+    "caesar_salad": 1000,
+    "cheesecake": 1000,
+    "chicken_curry": 1000,
+    "french_fries": 1000,
+    "hamburger": 1000,
+    "ice_cream": 1000,
+    "omelette": 1000,
+    "pizza": 1000,
+    "sushi": 1000
+  },
+  "exact_duplicates": 1,
+  "dataset_version": "poc-v1",
+  "root": "D:\\food-recognition-dietary-assistant\\food-recognition-dietary-assistant\\data\\raw\\food-101",
+  "seed": 42,
+  "validation_fraction": 0.2,
+  "method": "stratified original train; official test unchanged",
+  "prepared_at": "2026-10-31T06:34:15.687416+00:00",
+  "source": "Food-101 official ETH release"
+}

@@ -1,0 +1,4 @@
+{
+  "artifact": "efficientnet_b0/poc10-rtx3050-v1",
+  "reason": "highest validation macro-F1; latency breaks ties; final test metrics reported separately"
+}

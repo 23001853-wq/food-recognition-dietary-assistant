@@ -1,0 +1,69 @@
+{
+  "status": "PASS",
+  "seed": 2026,
+  "device": "cpu",
+  "training_performed": false,
+  "test_evaluation_performed": false,
+  "test_images_opened": 0,
+  "sample_count": 4,
+  "sample_splits": [
+    "val"
+  ],
+  "samples": [
+    {
+      "image_id": "hamburger/100719",
+      "relative_path": "images/hamburger/100719.jpg",
+      "class_key": "hamburger",
+      "split": "val",
+      "checksum": "b7a4f8c1629ceff89a73d5dc43a62573977a2cc71591ca1af0deccde2cf1aefc"
+    },
+    {
+      "image_id": "ice_cream/102595",
+      "relative_path": "images/ice_cream/102595.jpg",
+      "class_key": "ice_cream",
+      "split": "val",
+      "checksum": "7941f1b3bb009835f13744e56cda37a9bfd1c991a9660622803c1d52129d35f9"
+    },
+    {
+      "image_id": "pizza/1040878",
+      "relative_path": "images/pizza/1040878.jpg",
+      "class_key": "pizza",
+      "split": "val",
+      "checksum": "4502ccf3795ada10b1200f7c1220ca51c45d0d06b883ae1faaf28715b7097a1a"
+    },
+    {
+      "image_id": "chicken_curry/104874",
+      "relative_path": "images/chicken_curry/104874.jpg",
+      "class_key": "chicken_curry",
+      "split": "val",
+      "checksum": "ec1ece2ead5a73961824d0b2cbc3b3f69d74018b26430ad9fca06d82aa1e4c0c"
+    }
+  ],
+  "hog_features": 8100,
+  "hog_visualization_matches_pipeline": true,
+  "cnn_normalization_matches_pipeline": true,
+  "noise_repeatable": true,
+  "protected_files_unchanged": true,
+  "figures": [
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\01_anh_validation.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\02_rgb_va_kenh_mau.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\03_hsv_lab_tung_kenh.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\04_histogram.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\05_bien_doi_hinh_hoc.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\06_chuan_hoa_pixel.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\07_nhieu_gaussian.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\08_nhieu_salt_pepper.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\09_so_sanh_psnr.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\10_gradient_hog.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\11_vector_hog.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\12_pipeline_hog_svm.png",
+    "artifacts\\reports\\midterm_visualizations\\run_20261031T143555_985396Z\\13_so_sanh_mo_hinh.png"
+  ],
+  "python_version": "3.11.0",
+  "libraries": {
+    "opencv": "4.11.0",
+    "numpy": "1.26.4",
+    "matplotlib": "3.11.2",
+    "torch": "2.9.1+cpu"
+  }
+}

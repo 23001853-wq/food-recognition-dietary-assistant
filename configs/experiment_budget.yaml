@@ -1,0 +1,12 @@
+experiment: poc-v1-cpu-budget-v2-primal
+# Declared before final test evaluation; short resource-limited experiment.
+dataset_version: poc-v1
+classes: 10
+seed: 42
+cnn_head_epochs: 1
+cnn_fine_tune_epochs: 1
+batch_size: 4
+device: cpu
+selection_metric: validation_macro_f1
+notes: "Short CPU training budget; not a converged or full-101 benchmark. All official POC samples are retained."
+baseline_solver_note: "Primal LinearSVC, max_iter=2000, tol=0.001; prior dual run halted before validation/test results because of CPU/RAM cost."

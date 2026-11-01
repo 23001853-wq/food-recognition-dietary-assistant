@@ -1,18 +1,21 @@
 """Migration entry point. Business schema is scheduled for Phase 4."""
 
 from alembic import context
-from sqlalchemy import create_engine
 
 from food_assistant.config import Settings
 from food_assistant.persistence import orm_models  # noqa: F401
-from food_assistant.persistence.database import Base
+from food_assistant.persistence.database import Base, make_engine
 
 target_metadata = Base.metadata
 
 
 def run_migrations() -> None:
-    if not target_metadata.tables:
-        raise RuntimeError("Business schema is not implemented yet; see PLAN.md section 12.")
+    supplied_connection = context.config.attributes.get("connection")
+    if supplied_connection is not None:
+        context.configure(connection=supplied_connection, target_metadata=target_metadata)
+        with context.begin_transaction():
+            context.run_migrations()
+        return
     settings = Settings()
     if settings.database_url is None:
         raise RuntimeError("Set DATABASE_URL in .env before running migrations.")
@@ -22,7 +25,7 @@ def run_migrations() -> None:
         with context.begin_transaction():
             context.run_migrations()
     else:
-        engine = create_engine(url)
+        engine = make_engine(url)
         with engine.connect() as connection:
             context.configure(connection=connection, target_metadata=target_metadata)
             with context.begin_transaction():
