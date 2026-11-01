@@ -22,6 +22,144 @@ thật được cập nhật tại [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STA
 [MODEL_EVALUATION_REPORT.md](MODEL_EVALUATION_REPORT.md). Mock và smoke training
 không được dùng làm kết quả thực nghiệm.
 
+## Sơ đồ cấu trúc hệ thống
+
+Ứng dụng đang chạy và quy trình huấn luyện là hai luồng riêng. Website đọc model đã
+được chọn để nhận diện; mở website không tự huấn luyện lại model.
+
+```mermaid
+flowchart TD
+    User[Người dùng] --> UI[Streamlit: tải/chụp ảnh, xác nhận món và khẩu phần]
+    UI -->|HTTP request| API[FastAPI: validation và điều phối nghiệp vụ]
+    API --> Image[Xử lý ảnh: kiểm tra, RGB, EXIF, crop]
+    Image --> AI[Inference: nạp release và dự đoán Top-K]
+    Models[artifacts/models: trọng số, nhãn, preprocessing] --> AI
+    Pointer[artifacts/production/current.json: chọn release] --> AI
+    AI -->|Kết quả dự đoán| API
+    API <--> Nutrition[Nutrition Engine: nguồn tham chiếu và gram]
+    Nutrition <-->|Tra cứu dữ liệu dinh dưỡng| DB[(PostgreSQL)]
+    API <-->|Nhật ký, snapshot, thống kê| DB
+    API -->|JSON response| UI
+    subgraph Offline[Luồng dữ liệu và huấn luyện offline]
+        Data[data/raw + data/splits] --> Train[scripts + configs + src/ml]
+        Train --> Candidate[Model ứng viên và báo cáo thực nghiệm]
+    end
+    Candidate --> Models
+```
+
+Người dùng xác nhận món/khẩu phần trước khi API lưu bữa ăn. Kcal và macro được tính
+từ nguồn tham chiếu theo gram, không đo trực tiếp từ ảnh. Model mới trong thư mục
+101 lớp **không tự thay thế** model website; việc triển khai phải được chọn riêng qua
+production pointer. Sơ đồ chi tiết hơn: [diagrams/README.md](diagrams/README.md).
+
+## Cây thư mục và vai trò từng phần
+
+Thư mục gốc để chạy lệnh là thư mục chứa `pyproject.toml`, `README.md` và `src/`.
+Trên máy hiện tại: `D:\food-recognition-dietary-assistant\food-recognition-dietary-assistant`.
+Cây dưới đây lược bỏ cache và liệt kê các thành phần chính đang có trong repository.
+
+```text
+food-recognition-dietary-assistant/
+├── src/food_assistant/          # Toàn bộ mã nguồn chính: backend, frontend và AI
+│   ├── api/                    # FastAPI: endpoint, request/response và lỗi HTTP
+│   ├── services/               # Nghiệp vụ: nhận diện, khẩu phần, dinh dưỡng, nhật ký
+│   ├── persistence/            # SQLAlchemy: ORM, session, repository và seed
+│   ├── domain/                 # Pydantic schemas, enum và lỗi nghiệp vụ dùng chung
+│   ├── ml/                     # Dataset, transform, HOG, kiến trúc và vòng lặp training
+│   ├── nutrition/              # Chuẩn bị/kiểm tra catalog USDA và dữ liệu tham chiếu
+│   ├── ui/                     # Giao diện Streamlit gọi backend qua HTTP
+│   │   ├── pages/              # Home, nhận diện, nhật ký, thống kê, thông tin model
+│   │   ├── components/         # Crop ảnh, bảng dự đoán và card dinh dưỡng
+│   │   └── assets/             # Ảnh banner và minh họa giao diện
+│   ├── utils/                  # Tiện ích: đường dẫn, logging, khóa tiến trình...
+│   ├── config.py               # Đọc biến môi trường và cấu hình runtime
+│   └── app.py                  # Điểm khởi chạy và điều hướng frontend Streamlit
+├── scripts/                    # Các file thực thi từ Terminal
+│   ├── train_resnet18.py        # Gọi pipeline training ResNet18
+│   ├── train_efficientnet_b0.py # Gọi pipeline training EfficientNet-B0
+│   ├── train_hog_svm.py         # Gọi pipeline HOG + SVM
+│   ├── train_food101_101.ps1    # Launcher 101 lớp, chọn model, log và resume CNN
+│   ├── verify_dataset.py       # Kiểm tra dữ liệu/manifest; hỗ trợ full audit
+│   ├── prepare_food101_from_audit.py # Tạo split chống leakage từ audit đã có
+│   └── ...                     # Downloader, seed, notebook, đánh giá, smoke test...
+├── configs/                    # File tham số YAML/JSON, không phải checkpoint
+│   ├── poc/                    # Profile POC 10 lớp
+│   └── food101_101/             # Profile 101 lớp cho ba mô hình
+├── data/
+│   ├── raw/                    # Dataset gốc và archive nguồn; không sửa khi training
+│   ├── splits/                 # CSV manifest, labels.json, metadata, train/val/test
+│   │   ├── v1/                 # POC 10 lớp: 6.000 / 1.500 / 2.500 ảnh
+│   │   └── food101-101-v2/      # 101 lớp: 60.598 / 15.150 / 25.250 ảnh
+│   ├── nutrition/              # Catalog, mapping món–USDA, nguồn và coverage
+│   ├── processed/              # Vùng dành cho dữ liệu tiền xử lý xuất offline
+│   └── local_eval/             # Vùng dành cho dữ liệu đánh giá cục bộ riêng
+├── artifacts/                  # Sản phẩm của thí nghiệm, không phải mã nguồn
+│   ├── models/
+│   │   ├── efficientnet_b0/    # Các run POC 10 lớp
+│   │   ├── resnet18/           # Các run POC 10 lớp
+│   │   ├── hog_svm/            # Các run POC 10 lớp
+│   │   ├── food101_101/        # Các run 101 lớp, tách riêng theo model/run_id
+│   │   └── .locks/            # Khóa chống chạy trùng, không phải model
+│   ├── pretrained/            # Cache trọng số ImageNet ban đầu
+│   ├── production/            # Pointer chọn release phục vụ website
+│   └── reports/               # Metrics, confusion matrix, audit, log, hình báo cáo
+├── notebooks/                 # Thực nghiệm và giải thích phục vụ báo cáo giữa kỳ
+│   ├── midterm_image_processing_demo.ipynb # Bản chính, đã có output
+│   └── notebooks/             # Bản tương thích đường dẫn ban đầu, không phải phần khác
+├── contracts/                 # JSON Schema và response mẫu của hệ thống
+├── migrations/                # Alembic: các phiên bản thay đổi cấu trúc PostgreSQL
+├── tests/                     # Kiểm thử: unit, integration và smoke
+├── docs/                      # Giải thích kiến trúc, dữ liệu, giới hạn và thí nghiệm
+├── diagrams/                  # Sơ đồ Mermaid hệ thống, database và các luồng xử lý
+├── storage/                   # File runtime: uploads và dữ liệu tạm
+├── .streamlit/                # Theme/cấu hình Streamlit và ảnh tham khảo giao diện
+├── .venv/                     # Môi trường Python local cho CPU/phát triển/notebook
+├── .venv-cuda/                # Môi trường Python local có PyTorch CUDA
+├── .env.example               # Mẫu biến môi trường; .env thật chỉ dùng ở máy local
+├── pyproject.toml             # Khai báo package, dependencies và cấu hình công cụ
+├── requirements-lock.txt      # Phiên bản dependencies cho môi trường ML/phát triển
+├── requirements-runtime-lock.txt # Phiên bản dependencies cho runtime nhẹ
+├── Dockerfile                 # Đóng gói ứng dụng; tùy chọn cài thêm ML
+├── docker-compose.yml         # PostgreSQL + backend + frontend, volume/network
+└── alembic.ini                # Cấu hình chạy migration database
+```
+
+### Phân biệt các thư mục dễ nhầm
+
+| Phần | Chứa gì? | Ví dụ |
+|---|---|---|
+| `configs/` | Tham số để chạy, có thể chỉnh cho thí nghiệm mới | Số lớp kỳ vọng, batch size, learning rate, epoch |
+| `scripts/` | Điểm gọi thực thi từ Terminal | `train_resnet18.py` đọc file config và gọi training |
+| `src/` | Các hàm/lớp thực sự thực hiện công việc | `ml/train_utils.py` chạy loop; `api/` là backend; `ui/` là frontend |
+| `artifacts/models/` | Model và hợp đồng dữ liệu của từng lần chạy | `model.pth`, `model.joblib`, `labels.json`, `preprocessing.json` |
+| `artifacts/pretrained/` | Trọng số khởi tạo từ ImageNet | Chưa phải model phân loại món ăn đã fine-tune |
+| `artifacts/production/` | Tham chiếu release đã chọn | `current.json` trỏ tới model, không chứa toàn bộ trọng số |
+| `data/splits/` | Danh sách ảnh/nhãn/split/checksum | Không chứa các file ảnh; đường dẫn trỏ về `data/raw/` |
+
+Trong mỗi thư mục model có nhiều `run_id`; **có thư mục không đồng nghĩa đã train xong**.
+Kiểm tra `model_config.json` (`trained`, `num_classes`, `dataset_version`) và checksum.
+Không dùng số liệu 10 lớp như kết quả của 101 lớp.
+
+Ảnh không bắt buộc được xuất lại vào `data/processed/`: pipeline hiện resize/crop/
+normalize ngay khi DataLoader hoặc inference đọc ảnh. Thư mục đó trống không có nghĩa
+là thiếu tiền xử lý. Website cũng không đọc notebook để nhận diện; notebook chỉ tái
+sử dụng một số hàm trong `src/` để minh họa và kiểm chứng.
+
+### Clone repository và dữ liệu đi kèm
+
+Đưa lên Git mã nguồn, cấu hình, notebook, manifest/nhãn, tài liệu và báo cáo nhỏ cần
+tái lập. `.gitignore` loại `.env`, môi trường Python, raw dataset, pretrained weights,
+checkpoints và file runtime; vì vậy **clone code chưa đủ để chạy mọi chức năng**.
+
+- Chỉ xem notebook: có thể đọc các output đã lưu mà chưa cần chạy kernel.
+- Chạy lại notebook: cần Python 3.11, thư viện, ảnh mẫu và artifact POC mà notebook
+  đọc. Không cần GPU/database hoặc checkpoint CNN để chỉ đọc metric CNN đã lưu.
+  Xem [notebooks/README.md](notebooks/README.md) cho ID ảnh và cách chạy.
+- Chạy website với AI thật: cần PostgreSQL/cấu hình local và release được pointer
+  chọn, đủ các file theo checksum; không chỉ riêng `current.json`.
+- Huấn luyện: cần dataset local, manifest và đúng môi trường CPU/CUDA; chạy riêng
+  bằng script, không kích hoạt qua notebook hay website.
+
 ## Chạy nhanh bằng Docker
 
 Từ thư mục chứa README này, tạo `.env` từ `.env.example` nếu chưa có, thay mật khẩu
@@ -69,8 +207,9 @@ docker compose up -d postgres
 
 Dừng backend/frontend container trước khi dùng cùng port trên host. Có thể dùng
 PostgreSQL cài trực tiếp trên Windows bằng DATABASE_URL tương ứng; không thay SQLite.
-Môi trường thực thi hiện dùng torch CPU dù máy có RTX 3050 4GB. Runtime lock và full
-ML/dev lock được ghi riêng; bản venv phát triển hiện tái sử dụng các gói hệ thống đã có.
+`.venv` dùng cho CPU/phát triển; `.venv-cuda` đã có PyTorch CUDA cho RTX 3050 Ti 4GB.
+Runtime lock và full ML/dev lock được ghi riêng. Xem [FOOD101_101_TRAINING.md](FOOD101_101_TRAINING.md)
+để chọn đúng môi trường và chạy training 101 lớp; không cần cài lại nếu môi trường đã sẵn sàng.
 
 ## Kiểm thử
 
@@ -110,6 +249,10 @@ Release chỉ được chọn sau so sánh thực tế; không mặc định Eff
 | [API_DOCUMENTATION.md](API_DOCUMENTATION.md) | REST API và JSON contracts |
 | [DATABASE_GUIDE.md](DATABASE_GUIDE.md) | ORM, migrations, snapshot và seed |
 | [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) | Windows, Docker và vận hành |
+| [notebooks/README.md](notebooks/README.md) | Notebook giữa kỳ, ảnh mẫu, artifact phụ thuộc, hình đã xuất |
+| [FOOD101_101_TRAINING.md](FOOD101_101_TRAINING.md) | Cấu hình/lệnh training 101 lớp, tài nguyên và resume |
+| [NUTRITION_GUIDE.md](NUTRITION_GUIDE.md) | Catalog USDA, khẩu phần và kiểm chứng tính kcal |
+| [UI_GUIDE.md](UI_GUIDE.md) | Giao diện, camera và kiểm tra luồng sử dụng |
 | [diagrams](diagrams/README.md) | Mermaid nguồn; chưa render SVG/PNG |
 
 `src/food_assistant`: api, domain, services, persistence, ml, ui và utils.
