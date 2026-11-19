@@ -10,6 +10,7 @@ from pathlib import Path
 import yaml
 from PIL import Image
 
+from food_assistant.data_pipeline.atomic import resource_lock
 from food_assistant.ml.datasets import (
     ManifestDataset,
     audit_manifest,
@@ -32,8 +33,12 @@ def create_splits():
 
 
 def verify_dataset():
+    """Audit an immutable manifest and write its report outside the manifest directory."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest-dir", type=Path, default=Path("data/splits/v1"))
+    parser.add_argument(
+        "--report", type=Path, default=Path("data/reports/food101/manifest_quality_report.json")
+    )
     args = parser.parse_args()
     metadata = read_json(args.manifest_dir / "dataset_metadata.json")
     with (args.manifest_dir / "dataset_manifest.csv").open(encoding="utf-8") as handle:
@@ -42,7 +47,8 @@ def verify_dataset():
     for row in rows:
         with Image.open(Path(metadata["root"]) / row["relative_path"]) as image:
             image.verify()
-    write_json(args.manifest_dir / "quality_report.json", stats)
+    with resource_lock(args.report, timeout_seconds=0):
+        write_json(args.report, stats)
     print(stats)
 
 

@@ -1,0 +1,25 @@
+schema_version: 1
+paths:
+  raw_root: data/raw/food-101
+  staging_root: data/staging/food101
+  archive: data/raw/food-101.tar.gz
+  manifest_root: data/splits/v2
+  report_root: data/reports/elt/v2
+approval_file: configs/dataset_approval.json
+class_selection_file: configs/classes_poc.yaml
+dataset_scope: poc
+split_version: v2
+seed: 42
+val_fraction: 0.2
+download:
+  policy: disabled
+  retries: 3
+  backoff_seconds: 2
+quality:
+  require_full_integrity: true
+  reject_cross_split_duplicates: true
+locks:
+  timeout_seconds: 30
+fixtures:
+  enabled: false
+  root: tests/fixtures/food101

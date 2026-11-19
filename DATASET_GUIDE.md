@@ -8,6 +8,38 @@ Archive rights/README must be inspected after download; do not redistribute imag
 The official page does not publish a SHA256; local computed SHA256 is integrity evidence,
 not an independently verified official checksum.
 
+## Verifying the complete local release
+
+The full audit is read-only for the source images and does not rebuild or overwrite the
+frozen POC manifest. It checks the original 101-class metadata, every expected image,
+Pillow decoding, SHA256 duplicates, and the retained archive against its local download
+marker. Image checks are checkpointed by file size and filesystem timestamps; changed
+files are checked again. A lock prevents two full audits from running at once.
+
+```powershell
+.venv\Scripts\python.exe scripts\verify_food101.py --mode quick
+.venv\Scripts\python.exe scripts\verify_food101.py --mode full --dataloader --batch-size 4
+.venv\Scripts\python.exe -m pytest tests\unit\test_food101_verifier.py -q
+```
+
+Reports, log, and resumable checkpoint are written under `data/reports/food101/`.
+Quick mode checks structure and metadata but does not decode images or compute image
+hashes. Full mode is required for a PASS. `--dataloader` checks a batch from the official
+101-class train split and the existing POC 10-class manifest separately. A complete
+DataLoader PASS also requires the training transform dependency (`torchvision`) to load.
+The frozen manifest may contain a machine-specific root; the validation command uses a
+temporary root override and does not edit the manifest files.
+If a check fails, inspect `food101_report.json` for exact missing, unlisted, or unreadable
+paths. The audit never repairs or deletes images. Restore only from a trusted copy or
+archive, then rerun full mode; unchanged successful images are skipped using the
+checkpoint. Exact duplicate paths and cross-split hashes are reported for review before
+using official test metrics.
+
+The project requires Python 3.11. If it is not installed, create the project environment
+with `py -3.11 -m venv .venv`, then install the project's ML and development dependencies
+before running the commands above. The preprocessing check needs the matching `torch` and
+`torchvision` packages.
+
 From repository root with the project venv:
 
 ```powershell

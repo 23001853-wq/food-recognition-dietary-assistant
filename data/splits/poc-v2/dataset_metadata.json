@@ -1,0 +1,78 @@
+{
+  "schema_version": "2.0",
+  "dataset_version": "poc-v2",
+  "root": "../../raw/food-101",
+  "source_fingerprint": "f5cfdb7480c2650ed94c8624652ac595e4a7f038d660f4886869836632c56ed1",
+  "inventory_sha256": "b91c327114b45c4fe2e626404a86c449891e6e258c832e67a7f2350aeb59adb9",
+  "config_hash": "0acc05fcb9527dbf26bd1e6d002148e683dba9841e1728a0276aa029992cef95",
+  "split_fingerprint": "9c27e411507e604bde21291a01a061494d7e48d274bf04a0122c6ca7e58e431b",
+  "split_counts": {
+    "train": 6000,
+    "val": 1500,
+    "test": 2500
+  },
+  "class_mapping": [
+    {
+      "class_id": 0,
+      "class_key": "apple_pie",
+      "display_name_vi": "apple_pie",
+      "display_name_en": "apple pie"
+    },
+    {
+      "class_id": 1,
+      "class_key": "caesar_salad",
+      "display_name_vi": "caesar_salad",
+      "display_name_en": "caesar salad"
+    },
+    {
+      "class_id": 2,
+      "class_key": "cheesecake",
+      "display_name_vi": "cheesecake",
+      "display_name_en": "cheesecake"
+    },
+    {
+      "class_id": 3,
+      "class_key": "chicken_curry",
+      "display_name_vi": "chicken_curry",
+      "display_name_en": "chicken curry"
+    },
+    {
+      "class_id": 4,
+      "class_key": "french_fries",
+      "display_name_vi": "french_fries",
+      "display_name_en": "french fries"
+    },
+    {
+      "class_id": 5,
+      "class_key": "hamburger",
+      "display_name_vi": "hamburger",
+      "display_name_en": "hamburger"
+    },
+    {
+      "class_id": 6,
+      "class_key": "ice_cream",
+      "display_name_vi": "ice_cream",
+      "display_name_en": "ice cream"
+    },
+    {
+      "class_id": 7,
+      "class_key": "omelette",
+      "display_name_vi": "omelette",
+      "display_name_en": "omelette"
+    },
+    {
+      "class_id": 8,
+      "class_key": "pizza",
+      "display_name_vi": "pizza",
+      "display_name_en": "pizza"
+    },
+    {
+      "class_id": 9,
+      "class_key": "sushi",
+      "display_name_vi": "sushi",
+      "display_name_en": "sushi"
+    }
+  ],
+  "quality_policy_version": "poc-transform-1",
+  "complete": true
+}

@@ -1,0 +1,612 @@
+{
+  "schema_version": "2.0",
+  "dataset_version": "v2",
+  "labels": [
+    {
+      "class_id": 0,
+      "class_key": "apple_pie",
+      "display_name_vi": "apple_pie",
+      "display_name_en": "apple pie"
+    },
+    {
+      "class_id": 1,
+      "class_key": "baby_back_ribs",
+      "display_name_vi": "baby_back_ribs",
+      "display_name_en": "baby back ribs"
+    },
+    {
+      "class_id": 2,
+      "class_key": "baklava",
+      "display_name_vi": "baklava",
+      "display_name_en": "baklava"
+    },
+    {
+      "class_id": 3,
+      "class_key": "beef_carpaccio",
+      "display_name_vi": "beef_carpaccio",
+      "display_name_en": "beef carpaccio"
+    },
+    {
+      "class_id": 4,
+      "class_key": "beef_tartare",
+      "display_name_vi": "beef_tartare",
+      "display_name_en": "beef tartare"
+    },
+    {
+      "class_id": 5,
+      "class_key": "beet_salad",
+      "display_name_vi": "beet_salad",
+      "display_name_en": "beet salad"
+    },
+    {
+      "class_id": 6,
+      "class_key": "beignets",
+      "display_name_vi": "beignets",
+      "display_name_en": "beignets"
+    },
+    {
+      "class_id": 7,
+      "class_key": "bibimbap",
+      "display_name_vi": "bibimbap",
+      "display_name_en": "bibimbap"
+    },
+    {
+      "class_id": 8,
+      "class_key": "bread_pudding",
+      "display_name_vi": "bread_pudding",
+      "display_name_en": "bread pudding"
+    },
+    {
+      "class_id": 9,
+      "class_key": "breakfast_burrito",
+      "display_name_vi": "breakfast_burrito",
+      "display_name_en": "breakfast burrito"
+    },
+    {
+      "class_id": 10,
+      "class_key": "bruschetta",
+      "display_name_vi": "bruschetta",
+      "display_name_en": "bruschetta"
+    },
+    {
+      "class_id": 11,
+      "class_key": "caesar_salad",
+      "display_name_vi": "caesar_salad",
+      "display_name_en": "caesar salad"
+    },
+    {
+      "class_id": 12,
+      "class_key": "cannoli",
+      "display_name_vi": "cannoli",
+      "display_name_en": "cannoli"
+    },
+    {
+      "class_id": 13,
+      "class_key": "caprese_salad",
+      "display_name_vi": "caprese_salad",
+      "display_name_en": "caprese salad"
+    },
+    {
+      "class_id": 14,
+      "class_key": "carrot_cake",
+      "display_name_vi": "carrot_cake",
+      "display_name_en": "carrot cake"
+    },
+    {
+      "class_id": 15,
+      "class_key": "ceviche",
+      "display_name_vi": "ceviche",
+      "display_name_en": "ceviche"
+    },
+    {
+      "class_id": 16,
+      "class_key": "cheesecake",
+      "display_name_vi": "cheesecake",
+      "display_name_en": "cheesecake"
+    },
+    {
+      "class_id": 17,
+      "class_key": "cheese_plate",
+      "display_name_vi": "cheese_plate",
+      "display_name_en": "cheese plate"
+    },
+    {
+      "class_id": 18,
+      "class_key": "chicken_curry",
+      "display_name_vi": "chicken_curry",
+      "display_name_en": "chicken curry"
+    },
+    {
+      "class_id": 19,
+      "class_key": "chicken_quesadilla",
+      "display_name_vi": "chicken_quesadilla",
+      "display_name_en": "chicken quesadilla"
+    },
+    {
+      "class_id": 20,
+      "class_key": "chicken_wings",
+      "display_name_vi": "chicken_wings",
+      "display_name_en": "chicken wings"
+    },
+    {
+      "class_id": 21,
+      "class_key": "chocolate_cake",
+      "display_name_vi": "chocolate_cake",
+      "display_name_en": "chocolate cake"
+    },
+    {
+      "class_id": 22,
+      "class_key": "chocolate_mousse",
+      "display_name_vi": "chocolate_mousse",
+      "display_name_en": "chocolate mousse"
+    },
+    {
+      "class_id": 23,
+      "class_key": "churros",
+      "display_name_vi": "churros",
+      "display_name_en": "churros"
+    },
+    {
+      "class_id": 24,
+      "class_key": "clam_chowder",
+      "display_name_vi": "clam_chowder",
+      "display_name_en": "clam chowder"
+    },
+    {
+      "class_id": 25,
+      "class_key": "club_sandwich",
+      "display_name_vi": "club_sandwich",
+      "display_name_en": "club sandwich"
+    },
+    {
+      "class_id": 26,
+      "class_key": "crab_cakes",
+      "display_name_vi": "crab_cakes",
+      "display_name_en": "crab cakes"
+    },
+    {
+      "class_id": 27,
+      "class_key": "creme_brulee",
+      "display_name_vi": "creme_brulee",
+      "display_name_en": "creme brulee"
+    },
+    {
+      "class_id": 28,
+      "class_key": "croque_madame",
+      "display_name_vi": "croque_madame",
+      "display_name_en": "croque madame"
+    },
+    {
+      "class_id": 29,
+      "class_key": "cup_cakes",
+      "display_name_vi": "cup_cakes",
+      "display_name_en": "cup cakes"
+    },
+    {
+      "class_id": 30,
+      "class_key": "deviled_eggs",
+      "display_name_vi": "deviled_eggs",
+      "display_name_en": "deviled eggs"
+    },
+    {
+      "class_id": 31,
+      "class_key": "donuts",
+      "display_name_vi": "donuts",
+      "display_name_en": "donuts"
+    },
+    {
+      "class_id": 32,
+      "class_key": "dumplings",
+      "display_name_vi": "dumplings",
+      "display_name_en": "dumplings"
+    },
+    {
+      "class_id": 33,
+      "class_key": "edamame",
+      "display_name_vi": "edamame",
+      "display_name_en": "edamame"
+    },
+    {
+      "class_id": 34,
+      "class_key": "eggs_benedict",
+      "display_name_vi": "eggs_benedict",
+      "display_name_en": "eggs benedict"
+    },
+    {
+      "class_id": 35,
+      "class_key": "escargots",
+      "display_name_vi": "escargots",
+      "display_name_en": "escargots"
+    },
+    {
+      "class_id": 36,
+      "class_key": "falafel",
+      "display_name_vi": "falafel",
+      "display_name_en": "falafel"
+    },
+    {
+      "class_id": 37,
+      "class_key": "filet_mignon",
+      "display_name_vi": "filet_mignon",
+      "display_name_en": "filet mignon"
+    },
+    {
+      "class_id": 38,
+      "class_key": "fish_and_chips",
+      "display_name_vi": "fish_and_chips",
+      "display_name_en": "fish and chips"
+    },
+    {
+      "class_id": 39,
+      "class_key": "foie_gras",
+      "display_name_vi": "foie_gras",
+      "display_name_en": "foie gras"
+    },
+    {
+      "class_id": 40,
+      "class_key": "french_fries",
+      "display_name_vi": "french_fries",
+      "display_name_en": "french fries"
+    },
+    {
+      "class_id": 41,
+      "class_key": "french_onion_soup",
+      "display_name_vi": "french_onion_soup",
+      "display_name_en": "french onion soup"
+    },
+    {
+      "class_id": 42,
+      "class_key": "french_toast",
+      "display_name_vi": "french_toast",
+      "display_name_en": "french toast"
+    },
+    {
+      "class_id": 43,
+      "class_key": "fried_calamari",
+      "display_name_vi": "fried_calamari",
+      "display_name_en": "fried calamari"
+    },
+    {
+      "class_id": 44,
+      "class_key": "fried_rice",
+      "display_name_vi": "fried_rice",
+      "display_name_en": "fried rice"
+    },
+    {
+      "class_id": 45,
+      "class_key": "frozen_yogurt",
+      "display_name_vi": "frozen_yogurt",
+      "display_name_en": "frozen yogurt"
+    },
+    {
+      "class_id": 46,
+      "class_key": "garlic_bread",
+      "display_name_vi": "garlic_bread",
+      "display_name_en": "garlic bread"
+    },
+    {
+      "class_id": 47,
+      "class_key": "gnocchi",
+      "display_name_vi": "gnocchi",
+      "display_name_en": "gnocchi"
+    },
+    {
+      "class_id": 48,
+      "class_key": "greek_salad",
+      "display_name_vi": "greek_salad",
+      "display_name_en": "greek salad"
+    },
+    {
+      "class_id": 49,
+      "class_key": "grilled_cheese_sandwich",
+      "display_name_vi": "grilled_cheese_sandwich",
+      "display_name_en": "grilled cheese sandwich"
+    },
+    {
+      "class_id": 50,
+      "class_key": "grilled_salmon",
+      "display_name_vi": "grilled_salmon",
+      "display_name_en": "grilled salmon"
+    },
+    {
+      "class_id": 51,
+      "class_key": "guacamole",
+      "display_name_vi": "guacamole",
+      "display_name_en": "guacamole"
+    },
+    {
+      "class_id": 52,
+      "class_key": "gyoza",
+      "display_name_vi": "gyoza",
+      "display_name_en": "gyoza"
+    },
+    {
+      "class_id": 53,
+      "class_key": "hamburger",
+      "display_name_vi": "hamburger",
+      "display_name_en": "hamburger"
+    },
+    {
+      "class_id": 54,
+      "class_key": "hot_and_sour_soup",
+      "display_name_vi": "hot_and_sour_soup",
+      "display_name_en": "hot and sour soup"
+    },
+    {
+      "class_id": 55,
+      "class_key": "hot_dog",
+      "display_name_vi": "hot_dog",
+      "display_name_en": "hot dog"
+    },
+    {
+      "class_id": 56,
+      "class_key": "huevos_rancheros",
+      "display_name_vi": "huevos_rancheros",
+      "display_name_en": "huevos rancheros"
+    },
+    {
+      "class_id": 57,
+      "class_key": "hummus",
+      "display_name_vi": "hummus",
+      "display_name_en": "hummus"
+    },
+    {
+      "class_id": 58,
+      "class_key": "ice_cream",
+      "display_name_vi": "ice_cream",
+      "display_name_en": "ice cream"
+    },
+    {
+      "class_id": 59,
+      "class_key": "lasagna",
+      "display_name_vi": "lasagna",
+      "display_name_en": "lasagna"
+    },
+    {
+      "class_id": 60,
+      "class_key": "lobster_bisque",
+      "display_name_vi": "lobster_bisque",
+      "display_name_en": "lobster bisque"
+    },
+    {
+      "class_id": 61,
+      "class_key": "lobster_roll_sandwich",
+      "display_name_vi": "lobster_roll_sandwich",
+      "display_name_en": "lobster roll sandwich"
+    },
+    {
+      "class_id": 62,
+      "class_key": "macaroni_and_cheese",
+      "display_name_vi": "macaroni_and_cheese",
+      "display_name_en": "macaroni and cheese"
+    },
+    {
+      "class_id": 63,
+      "class_key": "macarons",
+      "display_name_vi": "macarons",
+      "display_name_en": "macarons"
+    },
+    {
+      "class_id": 64,
+      "class_key": "miso_soup",
+      "display_name_vi": "miso_soup",
+      "display_name_en": "miso soup"
+    },
+    {
+      "class_id": 65,
+      "class_key": "mussels",
+      "display_name_vi": "mussels",
+      "display_name_en": "mussels"
+    },
+    {
+      "class_id": 66,
+      "class_key": "nachos",
+      "display_name_vi": "nachos",
+      "display_name_en": "nachos"
+    },
+    {
+      "class_id": 67,
+      "class_key": "omelette",
+      "display_name_vi": "omelette",
+      "display_name_en": "omelette"
+    },
+    {
+      "class_id": 68,
+      "class_key": "onion_rings",
+      "display_name_vi": "onion_rings",
+      "display_name_en": "onion rings"
+    },
+    {
+      "class_id": 69,
+      "class_key": "oysters",
+      "display_name_vi": "oysters",
+      "display_name_en": "oysters"
+    },
+    {
+      "class_id": 70,
+      "class_key": "pad_thai",
+      "display_name_vi": "pad_thai",
+      "display_name_en": "pad thai"
+    },
+    {
+      "class_id": 71,
+      "class_key": "paella",
+      "display_name_vi": "paella",
+      "display_name_en": "paella"
+    },
+    {
+      "class_id": 72,
+      "class_key": "pancakes",
+      "display_name_vi": "pancakes",
+      "display_name_en": "pancakes"
+    },
+    {
+      "class_id": 73,
+      "class_key": "panna_cotta",
+      "display_name_vi": "panna_cotta",
+      "display_name_en": "panna cotta"
+    },
+    {
+      "class_id": 74,
+      "class_key": "peking_duck",
+      "display_name_vi": "peking_duck",
+      "display_name_en": "peking duck"
+    },
+    {
+      "class_id": 75,
+      "class_key": "pho",
+      "display_name_vi": "pho",
+      "display_name_en": "pho"
+    },
+    {
+      "class_id": 76,
+      "class_key": "pizza",
+      "display_name_vi": "pizza",
+      "display_name_en": "pizza"
+    },
+    {
+      "class_id": 77,
+      "class_key": "pork_chop",
+      "display_name_vi": "pork_chop",
+      "display_name_en": "pork chop"
+    },
+    {
+      "class_id": 78,
+      "class_key": "poutine",
+      "display_name_vi": "poutine",
+      "display_name_en": "poutine"
+    },
+    {
+      "class_id": 79,
+      "class_key": "prime_rib",
+      "display_name_vi": "prime_rib",
+      "display_name_en": "prime rib"
+    },
+    {
+      "class_id": 80,
+      "class_key": "pulled_pork_sandwich",
+      "display_name_vi": "pulled_pork_sandwich",
+      "display_name_en": "pulled pork sandwich"
+    },
+    {
+      "class_id": 81,
+      "class_key": "ramen",
+      "display_name_vi": "ramen",
+      "display_name_en": "ramen"
+    },
+    {
+      "class_id": 82,
+      "class_key": "ravioli",
+      "display_name_vi": "ravioli",
+      "display_name_en": "ravioli"
+    },
+    {
+      "class_id": 83,
+      "class_key": "red_velvet_cake",
+      "display_name_vi": "red_velvet_cake",
+      "display_name_en": "red velvet cake"
+    },
+    {
+      "class_id": 84,
+      "class_key": "risotto",
+      "display_name_vi": "risotto",
+      "display_name_en": "risotto"
+    },
+    {
+      "class_id": 85,
+      "class_key": "samosa",
+      "display_name_vi": "samosa",
+      "display_name_en": "samosa"
+    },
+    {
+      "class_id": 86,
+      "class_key": "sashimi",
+      "display_name_vi": "sashimi",
+      "display_name_en": "sashimi"
+    },
+    {
+      "class_id": 87,
+      "class_key": "scallops",
+      "display_name_vi": "scallops",
+      "display_name_en": "scallops"
+    },
+    {
+      "class_id": 88,
+      "class_key": "seaweed_salad",
+      "display_name_vi": "seaweed_salad",
+      "display_name_en": "seaweed salad"
+    },
+    {
+      "class_id": 89,
+      "class_key": "shrimp_and_grits",
+      "display_name_vi": "shrimp_and_grits",
+      "display_name_en": "shrimp and grits"
+    },
+    {
+      "class_id": 90,
+      "class_key": "spaghetti_bolognese",
+      "display_name_vi": "spaghetti_bolognese",
+      "display_name_en": "spaghetti bolognese"
+    },
+    {
+      "class_id": 91,
+      "class_key": "spaghetti_carbonara",
+      "display_name_vi": "spaghetti_carbonara",
+      "display_name_en": "spaghetti carbonara"
+    },
+    {
+      "class_id": 92,
+      "class_key": "spring_rolls",
+      "display_name_vi": "spring_rolls",
+      "display_name_en": "spring rolls"
+    },
+    {
+      "class_id": 93,
+      "class_key": "steak",
+      "display_name_vi": "steak",
+      "display_name_en": "steak"
+    },
+    {
+      "class_id": 94,
+      "class_key": "strawberry_shortcake",
+      "display_name_vi": "strawberry_shortcake",
+      "display_name_en": "strawberry shortcake"
+    },
+    {
+      "class_id": 95,
+      "class_key": "sushi",
+      "display_name_vi": "sushi",
+      "display_name_en": "sushi"
+    },
+    {
+      "class_id": 96,
+      "class_key": "tacos",
+      "display_name_vi": "tacos",
+      "display_name_en": "tacos"
+    },
+    {
+      "class_id": 97,
+      "class_key": "takoyaki",
+      "display_name_vi": "takoyaki",
+      "display_name_en": "takoyaki"
+    },
+    {
+      "class_id": 98,
+      "class_key": "tiramisu",
+      "display_name_vi": "tiramisu",
+      "display_name_en": "tiramisu"
+    },
+    {
+      "class_id": 99,
+      "class_key": "tuna_tartare",
+      "display_name_vi": "tuna_tartare",
+      "display_name_en": "tuna tartare"
+    },
+    {
+      "class_id": 100,
+      "class_key": "waffles",
+      "display_name_vi": "waffles",
+      "display_name_en": "waffles"
+    }
+  ]
+}

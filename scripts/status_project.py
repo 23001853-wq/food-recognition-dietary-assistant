@@ -18,6 +18,7 @@ TASKS = {
     "train_efficientnet_b0.py",
     "evaluate_models.py",
     "verify_dataset.py",
+    "verify_food101.py",
     "create_splits.py",
 }
 

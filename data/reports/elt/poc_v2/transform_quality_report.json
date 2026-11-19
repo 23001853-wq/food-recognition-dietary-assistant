@@ -1,0 +1,66 @@
+{
+  "schema_version": "2.0",
+  "scope": "poc",
+  "status": "PASS",
+  "verified_at_utc": "2026-11-18T09:29:52.760432+00:00",
+  "source_fingerprint": "f5cfdb7480c2650ed94c8624652ac595e4a7f038d660f4886869836632c56ed1",
+  "inventory_sha256": "b91c327114b45c4fe2e626404a86c449891e6e258c832e67a7f2350aeb59adb9",
+  "config_hash": "0acc05fcb9527dbf26bd1e6d002148e683dba9841e1728a0276aa029992cef95",
+  "split_fingerprint": "9c27e411507e604bde21291a01a061494d7e48d274bf04a0122c6ca7e58e431b",
+  "policy_version": "poc-transform-1",
+  "metrics": {
+    "image_count": 10000,
+    "class_count": 10,
+    "split_counts": {
+      "train": 6000,
+      "val": 1500,
+      "test": 2500
+    },
+    "per_class": {
+      "apple_pie": 1000,
+      "caesar_salad": 1000,
+      "cheesecake": 1000,
+      "chicken_curry": 1000,
+      "french_fries": 1000,
+      "hamburger": 1000,
+      "ice_cream": 1000,
+      "omelette": 1000,
+      "pizza": 1000,
+      "sushi": 1000
+    },
+    "exact_duplicates": 1,
+    "verified_images": 10000,
+    "expected_images": 10000,
+    "classes": [
+      "apple_pie",
+      "caesar_salad",
+      "cheesecake",
+      "chicken_curry",
+      "french_fries",
+      "hamburger",
+      "ice_cream",
+      "omelette",
+      "pizza",
+      "sushi"
+    ],
+    "official_test_ids_preserved": 2500,
+    "cross_split_duplicate_hashes": 0,
+    "duplicate_content_groups": [
+      {
+        "sha256": "a36278a3acab370553ca36ab48ee3d95bd5960907d75f2b96c49668ebf997d9c",
+        "image_ids": [
+          "hamburger/3578279",
+          "hamburger/3783650"
+        ],
+        "split": "train"
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    "Raw Phase 2.5 overall status is FAIL only for full official split leakage; POC-selected partitions were independently checked.",
+    "Exact duplicate references within one partition were retained and reported."
+  ],
+  "state": "SKIPPED",
+  "output": "C:\\Users\\User\\MyProjects\\food-recognition-dietary-assistant\\data\\splits\\poc-v2"
+}

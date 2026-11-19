@@ -1,0 +1,729 @@
+{
+  "image_operations": {
+    "image_id": "apple_pie/1963597",
+    "split": "train",
+    "class": "apple_pie",
+    "source_shape_hwc": [
+      341,
+      512,
+      3
+    ],
+    "source_dtype": "uint8",
+    "gray_shape": [
+      341,
+      512
+    ],
+    "hsv_shape": [
+      341,
+      512,
+      3
+    ],
+    "float_dtype": "float32",
+    "float_range": [
+      0.0,
+      1.0
+    ],
+    "bgr_roundtrip_equal": true,
+    "hsv_roundtrip_max_abs_error": 3,
+    "chw_shape": [
+      3,
+      341,
+      512
+    ],
+    "layout_roundtrip_equal": true,
+    "resize_shape": [
+      256,
+      256,
+      3
+    ],
+    "crop_shape": [
+      289,
+      435,
+      3
+    ],
+    "flip_shape": [
+      341,
+      512,
+      3
+    ],
+    "rotation_shape": [
+      341,
+      512,
+      3
+    ],
+    "brightness_range": [
+      0,
+      255
+    ],
+    "contrast_range": [
+      0,
+      255
+    ],
+    "gamma_range": [
+      0,
+      255
+    ],
+    "noise_mse_vs_source": 141.97232055664062,
+    "gaussian_mse_vs_source": 37.55503845214844,
+    "median_mse_vs_source": 49.90277099609375,
+    "morphology": {
+      "erosion_pixels": 39610,
+      "dilation_pixels": 84161,
+      "opening_pixels": 53087,
+      "closing_pixels": 68075
+    },
+    "edge_pixel_count": 26724,
+    "region_count": 16,
+    "region_examples": [
+      {
+        "component_id": 18,
+        "x": 144,
+        "y": 45,
+        "width": 59,
+        "height": 23,
+        "area": 268
+      },
+      {
+        "component_id": 39,
+        "x": 363,
+        "y": 55,
+        "width": 43,
+        "height": 25,
+        "area": 366
+      },
+      {
+        "component_id": 45,
+        "x": 141,
+        "y": 58,
+        "width": 52,
+        "height": 30,
+        "area": 465
+      },
+      {
+        "component_id": 61,
+        "x": 240,
+        "y": 63,
+        "width": 40,
+        "height": 14,
+        "area": 276
+      },
+      {
+        "component_id": 73,
+        "x": 321,
+        "y": 72,
+        "width": 76,
+        "height": 35,
+        "area": 834
+      },
+      {
+        "component_id": 185,
+        "x": 58,
+        "y": 109,
+        "width": 384,
+        "height": 232,
+        "area": 45360
+      },
+      {
+        "component_id": 190,
+        "x": 111,
+        "y": 110,
+        "width": 27,
+        "height": 24,
+        "area": 243
+      },
+      {
+        "component_id": 194,
+        "x": 261,
+        "y": 110,
+        "width": 45,
+        "height": 16,
+        "area": 285
+      },
+      {
+        "component_id": 275,
+        "x": 100,
+        "y": 141,
+        "width": 33,
+        "height": 21,
+        "area": 178
+      },
+      {
+        "component_id": 332,
+        "x": 450,
+        "y": 156,
+        "width": 46,
+        "height": 48,
+        "area": 880
+      },
+      {
+        "component_id": 491,
+        "x": 17,
+        "y": 214,
+        "width": 79,
+        "height": 72,
+        "area": 2128
+      },
+      {
+        "component_id": 527,
+        "x": 438,
+        "y": 227,
+        "width": 42,
+        "height": 77,
+        "area": 1476
+      },
+      {
+        "component_id": 590,
+        "x": 72,
+        "y": 247,
+        "width": 43,
+        "height": 28,
+        "area": 409
+      },
+      {
+        "component_id": 810,
+        "x": 41,
+        "y": 288,
+        "width": 31,
+        "height": 32,
+        "area": 416
+      },
+      {
+        "component_id": 860,
+        "x": 405,
+        "y": 295,
+        "width": 25,
+        "height": 29,
+        "area": 236
+      },
+      {
+        "component_id": 958,
+        "x": 423,
+        "y": 320,
+        "width": 45,
+        "height": 21,
+        "area": 354
+      }
+    ],
+    "mask_caveat": "Intensity-percentile threshold demonstration; not ground-truth food segmentation."
+  },
+  "near_duplicate_demo": {
+    "source_image_id": "apple_pie/1963597",
+    "source_split": "train",
+    "policy": {
+      "hash_size": 8,
+      "max_hamming_distance": 12,
+      "min_ssim": 0.72
+    },
+    "source_serialized_sha256": "8e641139c9e5460a234222a73ab2e775913c55dc9d5622b151452ee4c82b7210",
+    "variants": {
+      "resize": {
+        "source_manifest_sha256": "ae39fb09624509806097400945bb9bdf7c740681af0d62ea8bc392c83898cc50",
+        "derived_variant_sha256": "86606a5fe258a72da17b20922a2e4f7e2e81b747c1336ceac36915ec29c3d887",
+        "first_hash": "813e6ffb49287521",
+        "second_hash": "813e6ffb49287521",
+        "hamming_distance": 0,
+        "ssim": 0.9595860975225627,
+        "suspicious": true
+      },
+      "jpeg_recompression": {
+        "source_manifest_sha256": "ae39fb09624509806097400945bb9bdf7c740681af0d62ea8bc392c83898cc50",
+        "derived_variant_sha256": "d32a88dce5aba84ec783344ae26a18d70a84f07029e91959b140a50448ab41ab",
+        "first_hash": "813e6ffb49287521",
+        "second_hash": "813e6ffb49287521",
+        "hamming_distance": 0,
+        "ssim": 0.9948760824991401,
+        "suspicious": true
+      },
+      "brightness": {
+        "source_manifest_sha256": "ae39fb09624509806097400945bb9bdf7c740681af0d62ea8bc392c83898cc50",
+        "derived_variant_sha256": "efd538badfe1b87a0ff6e40a857bf5c6420de7fa1b881f1b21cf1848c3da79d7",
+        "first_hash": "813e6ffb49287521",
+        "second_hash": "813e6ffb49287521",
+        "hamming_distance": 0,
+        "ssim": 0.994331037670676,
+        "suspicious": true
+      },
+      "small_crop": {
+        "source_manifest_sha256": "ae39fb09624509806097400945bb9bdf7c740681af0d62ea8bc392c83898cc50",
+        "derived_variant_sha256": "2230897dbb918cc0a841ddc0a78317300fd504e2e3ae3463173134e0ffde56a6",
+        "first_hash": "813e6ffb49287521",
+        "second_hash": "8304677b5a6f6a29",
+        "hamming_distance": 20,
+        "ssim": 0.3327501427977109,
+        "suspicious": false
+      },
+      "horizontal_flip": {
+        "source_manifest_sha256": "ae39fb09624509806097400945bb9bdf7c740681af0d62ea8bc392c83898cc50",
+        "derived_variant_sha256": "335bdce1aa1e66effcaf70e101d688fc2352caa0a8b0567893d462662e5d3ed4",
+        "first_hash": "813e6ffb49287521",
+        "second_hash": "d46b33ac1d7d2074",
+        "hamming_distance": 32,
+        "ssim": 0.3362970870444531,
+        "suspicious": false
+      }
+    },
+    "scope": "one selected real v3 image and in-memory derivatives only; not a near-duplicate audit"
+  },
+  "dataloader": {
+    "resnet18": {
+      "train": {
+        "samples": 20,
+        "batch_shapes": [
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ]
+        ],
+        "combined_shape": [
+          20,
+          3,
+          224,
+          224
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "label_dtype": "int64",
+        "labels_match_manifest": true,
+        "random_augmentation": true,
+        "real_manifest_dataloader": true,
+        "decoded_rgb_sizes": [
+          [
+            512,
+            341
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            511,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            384
+          ],
+          [
+            512,
+            340
+          ],
+          [
+            384,
+            512
+          ],
+          [
+            384,
+            512
+          ],
+          [
+            342,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            382
+          ],
+          [
+            384,
+            512
+          ]
+        ]
+      },
+      "val": {
+        "samples": 10,
+        "batch_shapes": [
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            2,
+            3,
+            224,
+            224
+          ]
+        ],
+        "combined_shape": [
+          10,
+          3,
+          224,
+          224
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "label_dtype": "int64",
+        "labels_match_manifest": true,
+        "random_augmentation": false,
+        "real_manifest_dataloader": true,
+        "decoded_rgb_sizes": [
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            384
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ],
+          [
+            512,
+            512
+          ]
+        ],
+        "eval_repeat_max_abs_difference": 0.0
+      }
+    },
+    "efficientnet_b0": {
+      "train": {
+        "samples": 20,
+        "batch_shapes": [
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ]
+        ],
+        "combined_shape": [
+          20,
+          3,
+          224,
+          224
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "labels_from_manifest": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "label_dtype": "int64 (manifest IDs)",
+        "random_augmentation": true,
+        "real_image_source": "same once-decoded sample retained in memory",
+        "real_manifest_dataloader": false
+      },
+      "val": {
+        "samples": 10,
+        "batch_shapes": [
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            4,
+            3,
+            224,
+            224
+          ],
+          [
+            2,
+            3,
+            224,
+            224
+          ]
+        ],
+        "combined_shape": [
+          10,
+          3,
+          224,
+          224
+        ],
+        "dtype": "torch.float32",
+        "finite": true,
+        "labels_from_manifest": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "label_dtype": "int64 (manifest IDs)",
+        "random_augmentation": false,
+        "real_image_source": "same once-decoded sample retained in memory",
+        "real_manifest_dataloader": false,
+        "eval_repeat_max_abs_difference": 0.0
+      }
+    }
+  },
+  "all_sample_pixel_validation": {
+    "train": {
+      "images_checked_in_memory": 20,
+      "hw_sizes": [
+        [
+          341,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          511
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          384,
+          512
+        ],
+        [
+          340,
+          512
+        ],
+        [
+          512,
+          384
+        ],
+        [
+          512,
+          384
+        ],
+        [
+          512,
+          342
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          382,
+          512
+        ],
+        [
+          512,
+          384
+        ]
+      ]
+    },
+    "val": {
+      "images_checked_in_memory": 10,
+      "hw_sizes": [
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          384,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ],
+        [
+          512,
+          512
+        ]
+      ]
+    }
+  }
+}

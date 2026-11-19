@@ -1,0 +1,47 @@
+{
+  "package": "food101-elt-prompt-pack",
+  "version": "1.0.0",
+  "language": "vi",
+  "created": "2026-11-17",
+  "repo_url": "https://github.com/23001853-wq/food-recognition-dietary-assistant",
+  "repo_tree_sha_at_review": "2ead0dbd472a97978205ecb907e8a342b43f9fc9",
+  "phase_order": [
+    "prompts/01_PHASE_0_BASELINE.md",
+    "prompts/02_PHASE_1_ARCHITECTURE.md",
+    "prompts/03_PHASE_2_DATA_SAFETY.md",
+    "prompts/04_PHASE_3_EXTRACT.md",
+    "prompts/05_PHASE_4_TRANSFORM.md",
+    "prompts/06_PHASE_5_ORCHESTRATION.md",
+    "prompts/07_PHASE_6_TESTING_RELEASE.md"
+  ],
+  "global_prompts": [
+    "prompts/00_MASTER.md",
+    "prompts/00_GUARDRAILS.md"
+  ],
+  "review_prompt": "prompts/08_REVIEW_PR.md",
+  "recovery_prompt": "prompts/09_ROLLBACK_RECOVERY.md",
+  "safe_defaults": {
+    "download_real_dataset": false,
+    "train_model": false,
+    "modify_existing_raw": false,
+    "overwrite_manifest_v1": false,
+    "requires_warehouse": false
+  },
+  "files_sha256": {
+    "README.md": "9546dc71efa2ef15889fe27b20d049cba123d301dede0e85d348a830b30426fd",
+    "prompts/00_GUARDRAILS.md": "6490d3516b82528195dbd8ad3b9ab5db072a183386f726ca238febf118146dd6",
+    "prompts/00_MASTER.md": "291727024563703706a91be86b5d5a757b77d321e749912fa1c9cfd376b15bc7",
+    "prompts/01_PHASE_0_BASELINE.md": "120d40c39837ad6414dae1e7ae22bea23e4e1653e2d3cb6b908a854740c37a4b",
+    "prompts/02_PHASE_1_ARCHITECTURE.md": "0239fd69367eef03f01419878699ff60a40ff5aabddc63386a376b1d4237800b",
+    "prompts/03_PHASE_2_DATA_SAFETY.md": "f049c1b4839d0a71d7b46746678fac1b0bfe6da5e6ebe40f519b7ee03df1b84a",
+    "prompts/04_PHASE_3_EXTRACT.md": "b1d136678a15e432a9644ab6ec99d3bf464f501a324a3a5901558f9a37255afc",
+    "prompts/05_PHASE_4_TRANSFORM.md": "e196e43d2670ebbaeb2f2b095052bcb14ce986dfe8ee6363070e49fd54341999",
+    "prompts/06_PHASE_5_ORCHESTRATION.md": "047d36c6d6f8f879a3c154f222ab35b5b774bf84e5487d5cd75957ec1bb664ea",
+    "prompts/07_PHASE_6_TESTING_RELEASE.md": "b2328016bff48871b0d831893305a0cc6d3393e85ea106dcb2550dc58cc2bfbe",
+    "prompts/08_REVIEW_PR.md": "025294c8b9a381d03303a6260b416f57f92e8558aa67fb086ef000f4709da381",
+    "prompts/09_ROLLBACK_RECOVERY.md": "c1820d688a807c8e5e1fc7ce6e7dedf413fa2559707a73967db9a4bf75968eb6",
+    "references/ACCEPTANCE_MATRIX.md": "54acd08554b77dfbabca7a2aaffece156d99b0d096ba76864a7cb88c0b6cb8d9",
+    "references/EXECUTION_LOG_TEMPLATE.md": "50c027d3bb19c57335dfb2675212b1f2d355aa669e5ee1df5363bf3818883957",
+    "references/REPO_SNAPSHOT.md": "fffd8d29de99df3984ecfb90704a5cdf01d89cd87291141a21abebf0b419fbdd"
+  }
+}

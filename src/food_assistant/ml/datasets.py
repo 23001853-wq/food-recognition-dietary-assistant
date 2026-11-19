@@ -3,6 +3,8 @@
 import csv
 import hashlib
 import json
+import shutil
+import tempfile
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
@@ -10,6 +12,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageOps
 from sklearn.model_selection import train_test_split
+
+from food_assistant.data_pipeline.atomic import atomic_write_csv, atomic_write_json, resource_lock
 
 FIELDS = [
     "image_id",
@@ -26,19 +30,29 @@ FIELDS = [
 
 
 def read_json(path):
+    """Read a UTF-8 JSON document from the given path."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def write_json(path, value):
-    Path(path).write_text(json.dumps(value, ensure_ascii=False, indent=2), encoding="utf-8")
+    """Atomically write a UTF-8 JSON document without truncating prior output."""
+    atomic_write_json(Path(path), value)
 
 
 def audit_manifest(rows, root):
+    """Validate manifest paths, checksums, split isolation, and contiguous class IDs."""
     paths, hashes, mapping, groups = {}, {}, {}, {}
     for row in rows:
         if row["split"] not in {"train", "val", "test"}:
             raise ValueError("Unknown split")
-        path = (Path(root) / row["relative_path"]).resolve()
+        relative_path = Path(row["relative_path"])
+        if (
+            relative_path.is_absolute()
+            or ".." in relative_path.parts
+            or "\\" in row["relative_path"]
+        ):
+            raise ValueError("Manifest paths must be safe root-relative paths")
+        path = (Path(root) / relative_path).resolve()
         if not path.is_relative_to(Path(root).resolve()) or not path.is_file():
             raise ValueError("Missing or unsafe image path")
         if row["relative_path"] in paths:
@@ -68,9 +82,24 @@ def audit_manifest(rows, root):
 
 
 def prepare_food101(root, output, classes, version="poc-v1", seed=42, val_fraction=0.2):
+    """Build a new immutable manifest directory and publish it atomically."""
     root, output = Path(root), Path(output)
-    if output.exists() and any(output.glob("*.csv")):
-        raise ValueError("Refusing to overwrite a frozen manifest; use a new output version")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with resource_lock(output, timeout_seconds=0):
+        if output.exists():
+            raise ValueError("Refusing to overwrite an existing manifest; use a new output version")
+        staging = Path(tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=output.parent))
+        try:
+            stats = _build_food101_manifest(root, staging, classes, version, seed, val_fraction)
+            staging.rename(output)
+            return stats
+        except BaseException:
+            shutil.rmtree(staging, ignore_errors=True)
+            raise
+
+
+def _build_food101_manifest(root, output, classes, version, seed, val_fraction):
+    """Write manifest artifacts to a private staging directory for atomic publication."""
     official_classes = (root / "meta/classes.txt").read_text().splitlines()
     if len(classes) != len(set(classes)) or not set(classes) <= set(official_classes):
         raise ValueError("Invalid class selection")
@@ -119,14 +148,10 @@ def prepare_food101(root, output, classes, version="poc-v1", seed=42, val_fracti
             if len(rows) % 1000 == 0:
                 print(f"Validated {len(rows)} selected Food-101 images", flush=True)
     stats = audit_manifest(rows, root)
-    output.mkdir(parents=True, exist_ok=True)
     for name, subset in [("dataset_manifest", rows)] + [
         (s, [r for r in rows if r["split"] == s]) for s in ("train", "val", "test")
     ]:
-        with (output / f"{name}.csv").open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=FIELDS)
-            writer.writeheader()
-            writer.writerows(subset)
+        atomic_write_csv(output / f"{name}.csv", subset, FIELDS)
     write_json(
         output / "labels.json",
         {
@@ -160,11 +185,24 @@ def prepare_food101(root, output, classes, version="poc-v1", seed=42, val_fracti
 
 
 class ManifestDataset:
-    def __init__(self, manifest_dir, split, transform=None, limit_per_class=None):
+    """Load an immutable split manifest, with an optional local root override for relocation."""
+
+    def __init__(
+        self, manifest_dir, split, transform=None, limit_per_class=None, root_override=None
+    ):
+        """Initialize a manifest split without changing its frozen metadata files."""
         directory = Path(manifest_dir)
         self.metadata = read_json(directory / "dataset_metadata.json")
         self.labels = read_json(directory / "labels.json")
-        self.root = Path(self.metadata["root"])
+        if root_override is not None:
+            self.root = Path(root_override)
+        else:
+            metadata_root = Path(self.metadata["root"])
+            self.root = (
+                metadata_root
+                if metadata_root.is_absolute()
+                else (directory / metadata_root).resolve()
+            )
         with (directory / "dataset_manifest.csv").open(encoding="utf-8") as handle:
             all_rows = list(csv.DictReader(handle))
         audit_manifest(all_rows, self.root)
@@ -190,11 +228,40 @@ class ManifestDataset:
         self.transform = transform
 
     def __len__(self):
+        """Return the number of rows in the selected manifest split."""
         return len(self.rows)
 
     def __getitem__(self, index):
+        """Decode one manifest image and return its persisted class index."""
         row = self.rows[index]
         with Image.open(self.root / row["relative_path"]) as image:
             image = ImageOps.exif_transpose(image).convert("RGB")
-            value = self.transform(image) if self.transform else np.asarray(image)
+            value = self.transform(image) if self.transform else np.asarray(image).copy()
         return value, int(row["class_id"])
+
+
+class OfficialFood101Dataset:
+    """Read one official Food-101 split directly from its original metadata files."""
+
+    def __init__(self, root, split, transform=None):
+        """Load official class order and image keys for the requested train or test split."""
+        if split not in {"train", "test"}:
+            raise ValueError("Food-101 official split must be 'train' or 'test'")
+        self.root = Path(root)
+        self.classes = (self.root / "meta/classes.txt").read_text(encoding="utf-8").splitlines()
+        self.class_to_id = {key: index for index, key in enumerate(self.classes)}
+        names = (self.root / f"meta/{split}.txt").read_text(encoding="utf-8").splitlines()
+        self.rows = [(name, self.class_to_id[name.split("/", 1)[0]]) for name in names]
+        self.transform = transform
+
+    def __len__(self):
+        """Return the number of official metadata entries in this split."""
+        return len(self.rows)
+
+    def __getitem__(self, index):
+        """Decode an official image and return the class ID from classes.txt order."""
+        name, class_id = self.rows[index]
+        with Image.open(self.root / "images" / f"{name}.jpg") as image:
+            image = ImageOps.exif_transpose(image).convert("RGB")
+            value = self.transform(image) if self.transform else np.asarray(image).copy()
+        return value, class_id

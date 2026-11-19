@@ -1,0 +1,108 @@
+{
+  "near_duplicate_metrics": {
+    "confusion": {
+      "false_negative": 2,
+      "false_positive": 1,
+      "precision": 0.8,
+      "recall": 0.6666666666666666,
+      "true_negative": 1,
+      "true_positive": 4
+    },
+    "pairs": [
+      {
+        "expected_copy": true,
+        "first_hash": "85471f397c646533",
+        "fixture": "exact copy",
+        "hamming_distance": 0,
+        "second_hash": "85471f397c646533",
+        "sha256_same": true,
+        "ssim": 1.0,
+        "suspicious": true
+      },
+      {
+        "expected_copy": true,
+        "first_hash": "85471f397c646533",
+        "fixture": "resize",
+        "hamming_distance": 0,
+        "second_hash": "85471f397c646533",
+        "sha256_same": false,
+        "ssim": 0.9332348200828099,
+        "suspicious": true
+      },
+      {
+        "expected_copy": true,
+        "first_hash": "85471f397c646533",
+        "fixture": "JPEG recompression",
+        "hamming_distance": 0,
+        "second_hash": "85471f397c646533",
+        "sha256_same": false,
+        "ssim": 0.9523504903601017,
+        "suspicious": true
+      },
+      {
+        "expected_copy": true,
+        "first_hash": "85471f397c646533",
+        "fixture": "brightness change",
+        "hamming_distance": 0,
+        "second_hash": "85471f397c646533",
+        "sha256_same": false,
+        "ssim": 0.9942641839751145,
+        "suspicious": true
+      },
+      {
+        "expected_copy": true,
+        "first_hash": "85471f397c646533",
+        "fixture": "slight crop",
+        "hamming_distance": 2,
+        "second_hash": "85471f197c6c6533",
+        "sha256_same": false,
+        "ssim": 0.6773221179966121,
+        "suspicious": false
+      },
+      {
+        "expected_copy": true,
+        "first_hash": "85471f397c646533",
+        "fixture": "horizontal flip",
+        "hamming_distance": 28,
+        "second_hash": "d0534a6c3db33566",
+        "sha256_same": false,
+        "ssim": 0.7627206707525656,
+        "suspicious": false
+      },
+      {
+        "expected_copy": false,
+        "first_hash": "85471f397c646533",
+        "fixture": "same layout, different channel palette",
+        "hamming_distance": 0,
+        "second_hash": "85471f397c646533",
+        "sha256_same": false,
+        "ssim": 0.9782984343222283,
+        "suspicious": true
+      },
+      {
+        "expected_copy": false,
+        "first_hash": "85471f397c646533",
+        "fixture": "unrelated texture",
+        "hamming_distance": 28,
+        "second_hash": "886a5b0e0ec97da7",
+        "sha256_same": false,
+        "ssim": 0.02359553953409991,
+        "suspicious": false
+      }
+    ],
+    "policy": {
+      "hash_size": 8,
+      "max_hamming_distance": 12,
+      "min_ssim": 0.72
+    },
+    "scope": "synthetic fixture only; not a full-v3 scan or validated food-label policy"
+  },
+  "pixel_metrics": {
+    "gaussian_filtered_mse": 87.83715057373047,
+    "gaussian_noise_mse": 322.43951416015625,
+    "median_filtered_mse": 37.16769027709961,
+    "salt_pepper_mse": 463.6714782714844
+  },
+  "provenance": "synthetic data generated locally; no Food-101 files read",
+  "seed": 2026
+}

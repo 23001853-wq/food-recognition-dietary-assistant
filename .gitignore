@@ -222,6 +222,10 @@ __marimo__/
 !/data/raw/.gitkeep
 /data/processed/**
 !/data/processed/.gitkeep
+/data/reports/food101/food101_checkpoint.json
+/data/reports/food101/food101_checkpoint.json.*.pending
+/data/reports/food101/food101_checkpoint.json.pending
+/data/reports/food101/food101_audit.lock
 /data/local_eval/**
 !/data/local_eval/.gitkeep
 /storage/uploads/**

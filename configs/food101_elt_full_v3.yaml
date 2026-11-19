@@ -1,0 +1,35 @@
+schema_version: 1
+paths:
+  raw_root: data/raw/food-101
+  staging_root: data/staging/food101
+  archive: data/raw/food-101.tar.gz
+  manifest_root: data/splits/v3
+  report_root: data/reports/elt/v3/phase_2_7
+source_manifest_root: data/splits/v2
+approval_file: configs/dataset_approval.json
+class_selection_file: configs/classes_full.yaml
+dataset_scope: full
+split_version: v3
+seed: 42
+val_fraction: 0.1
+download:
+  policy: disabled
+  retries: 3
+  backoff_seconds: 2
+quality:
+  require_full_integrity: true
+  reject_cross_split_duplicates: true
+split_policy:
+  preserve_official_test: true
+  exclude_train_hashes_in_test: false
+  create_validation: true
+  reject_cross_partition_duplicates: true
+  deduplicate_train: true
+  same_label_duplicate_policy: keep_lexicographic_min
+  cross_label_duplicate_policy: quarantine_all
+  validation_algorithm: stratified_after_sha256_group_collapse
+locks:
+  timeout_seconds: 30
+fixtures:
+  enabled: false
+  root: tests/fixtures/food101

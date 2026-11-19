@@ -1,0 +1,305 @@
+{
+  "source_manifest": "data/splits/v3/dataset_manifest.csv",
+  "source_v3_fingerprint": "aa43cfa766982006fe6a3611a49e0f07d35d33d56e54310e923cb5e58fbdbb59",
+  "seed": 4505,
+  "selection_policy": "seeded choice from sorted IDs; one train image for class IDs 0-19 and one val image for 0-9",
+  "unique_image_count": 30,
+  "split_counts": {
+    "train": 20,
+    "val": 10
+  },
+  "class_coverage": [
+    "apple_pie",
+    "baby_back_ribs",
+    "baklava",
+    "beef_carpaccio",
+    "beef_tartare",
+    "beet_salad",
+    "beignets",
+    "bibimbap",
+    "bread_pudding",
+    "breakfast_burrito",
+    "bruschetta",
+    "caesar_salad",
+    "cannoli",
+    "caprese_salad",
+    "carrot_cake",
+    "ceviche",
+    "cheese_plate",
+    "cheesecake",
+    "chicken_curry",
+    "chicken_quesadilla"
+  ],
+  "samples": [
+    {
+      "sample_id": "train-0",
+      "image_id": "apple_pie/1963597",
+      "split": "train",
+      "class_name": "apple_pie",
+      "class_id": 0,
+      "relative_path": "images/apple_pie/1963597.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-1",
+      "image_id": "baby_back_ribs/2406178",
+      "split": "train",
+      "class_name": "baby_back_ribs",
+      "class_id": 1,
+      "relative_path": "images/baby_back_ribs/2406178.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-2",
+      "image_id": "baklava/3533697",
+      "split": "train",
+      "class_name": "baklava",
+      "class_id": 2,
+      "relative_path": "images/baklava/3533697.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-3",
+      "image_id": "beef_carpaccio/3829023",
+      "split": "train",
+      "class_name": "beef_carpaccio",
+      "class_id": 3,
+      "relative_path": "images/beef_carpaccio/3829023.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-4",
+      "image_id": "beef_tartare/3891016",
+      "split": "train",
+      "class_name": "beef_tartare",
+      "class_id": 4,
+      "relative_path": "images/beef_tartare/3891016.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-5",
+      "image_id": "beet_salad/3465676",
+      "split": "train",
+      "class_name": "beet_salad",
+      "class_id": 5,
+      "relative_path": "images/beet_salad/3465676.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-6",
+      "image_id": "beignets/1297009",
+      "split": "train",
+      "class_name": "beignets",
+      "class_id": 6,
+      "relative_path": "images/beignets/1297009.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-7",
+      "image_id": "bibimbap/2683060",
+      "split": "train",
+      "class_name": "bibimbap",
+      "class_id": 7,
+      "relative_path": "images/bibimbap/2683060.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-8",
+      "image_id": "bread_pudding/2769018",
+      "split": "train",
+      "class_name": "bread_pudding",
+      "class_id": 8,
+      "relative_path": "images/bread_pudding/2769018.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-9",
+      "image_id": "breakfast_burrito/2182358",
+      "split": "train",
+      "class_name": "breakfast_burrito",
+      "class_id": 9,
+      "relative_path": "images/breakfast_burrito/2182358.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-10",
+      "image_id": "bruschetta/759564",
+      "split": "train",
+      "class_name": "bruschetta",
+      "class_id": 10,
+      "relative_path": "images/bruschetta/759564.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-11",
+      "image_id": "caesar_salad/3039039",
+      "split": "train",
+      "class_name": "caesar_salad",
+      "class_id": 11,
+      "relative_path": "images/caesar_salad/3039039.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-12",
+      "image_id": "cannoli/3726480",
+      "split": "train",
+      "class_name": "cannoli",
+      "class_id": 12,
+      "relative_path": "images/cannoli/3726480.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-13",
+      "image_id": "caprese_salad/2081989",
+      "split": "train",
+      "class_name": "caprese_salad",
+      "class_id": 13,
+      "relative_path": "images/caprese_salad/2081989.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-14",
+      "image_id": "carrot_cake/1305641",
+      "split": "train",
+      "class_name": "carrot_cake",
+      "class_id": 14,
+      "relative_path": "images/carrot_cake/1305641.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-15",
+      "image_id": "ceviche/3116811",
+      "split": "train",
+      "class_name": "ceviche",
+      "class_id": 15,
+      "relative_path": "images/ceviche/3116811.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-16",
+      "image_id": "cheesecake/1624884",
+      "split": "train",
+      "class_name": "cheesecake",
+      "class_id": 16,
+      "relative_path": "images/cheesecake/1624884.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-17",
+      "image_id": "cheese_plate/603504",
+      "split": "train",
+      "class_name": "cheese_plate",
+      "class_id": 17,
+      "relative_path": "images/cheese_plate/603504.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-18",
+      "image_id": "chicken_curry/314160",
+      "split": "train",
+      "class_name": "chicken_curry",
+      "class_id": 18,
+      "relative_path": "images/chicken_curry/314160.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "train-19",
+      "image_id": "chicken_quesadilla/67932",
+      "split": "train",
+      "class_name": "chicken_quesadilla",
+      "class_id": 19,
+      "relative_path": "images/chicken_quesadilla/67932.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-0",
+      "image_id": "apple_pie/1174949",
+      "split": "val",
+      "class_name": "apple_pie",
+      "class_id": 0,
+      "relative_path": "images/apple_pie/1174949.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-1",
+      "image_id": "baby_back_ribs/510053",
+      "split": "val",
+      "class_name": "baby_back_ribs",
+      "class_id": 1,
+      "relative_path": "images/baby_back_ribs/510053.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-2",
+      "image_id": "baklava/2159134",
+      "split": "val",
+      "class_name": "baklava",
+      "class_id": 2,
+      "relative_path": "images/baklava/2159134.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-3",
+      "image_id": "beef_carpaccio/248058",
+      "split": "val",
+      "class_name": "beef_carpaccio",
+      "class_id": 3,
+      "relative_path": "images/beef_carpaccio/248058.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-4",
+      "image_id": "beef_tartare/3793016",
+      "split": "val",
+      "class_name": "beef_tartare",
+      "class_id": 4,
+      "relative_path": "images/beef_tartare/3793016.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-5",
+      "image_id": "beet_salad/3632993",
+      "split": "val",
+      "class_name": "beet_salad",
+      "class_id": 5,
+      "relative_path": "images/beet_salad/3632993.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-6",
+      "image_id": "beignets/3709395",
+      "split": "val",
+      "class_name": "beignets",
+      "class_id": 6,
+      "relative_path": "images/beignets/3709395.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-7",
+      "image_id": "bibimbap/2711890",
+      "split": "val",
+      "class_name": "bibimbap",
+      "class_id": 7,
+      "relative_path": "images/bibimbap/2711890.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-8",
+      "image_id": "bread_pudding/3068109",
+      "split": "val",
+      "class_name": "bread_pudding",
+      "class_id": 8,
+      "relative_path": "images/bread_pudding/3068109.jpg",
+      "sampling_seed": 4505
+    },
+    {
+      "sample_id": "val-9",
+      "image_id": "breakfast_burrito/1444284",
+      "split": "val",
+      "class_name": "breakfast_burrito",
+      "class_id": 9,
+      "relative_path": "images/breakfast_burrito/1444284.jpg",
+      "sampling_seed": 4505
+    }
+  ]
+}
