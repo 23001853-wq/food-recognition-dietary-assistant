@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 import multiprocessing
+import traceback
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -222,7 +223,7 @@ def _publish_v3_process(config_path, v2_config_path, baseline_path, results):
         outcome = build_training_split_v3(config_path, v2_config_path, baseline_path)
         results.put(outcome["state"])
     except BaseException as exc:
-        results.put(f"{type(exc).__name__}: {exc}")
+        results.put(f"{type(exc).__name__}: {exc}\n{traceback.format_exc()}")
 
 
 def test_v3_deduplicates_same_label_and_quarantines_all_cross_label_refs(tmp_path):
@@ -386,6 +387,10 @@ def test_v3_publish_failure_cleans_stage_and_preserves_v2(tmp_path, monkeypatch)
     assert not (tmp_path / "data/splits/v3").exists()
     assert not list((tmp_path / "data/splits").glob(".v3.staging-*"))
     assert v2_manifest.read_bytes() == previous
+    monkeypatch.undo()
+    recovered = build_training_split_v3(v3_config, v2_config, baseline)
+    assert recovered["state"] == "PASS"
+    assert not list((tmp_path / "data/splits").glob(".v3.staging-*"))
 
 
 def test_v3_two_process_publish_is_serialized(tmp_path):
@@ -410,3 +415,40 @@ def test_v3_two_process_publish_is_serialized(tmp_path):
     assert sorted(output.get(timeout=2) for _ in processes) == ["PASS", "SKIPPED"]
     assert all(process.exitcode == 0 for process in processes)
     assert (tmp_path / "data/splits/v3/dataset_metadata.json").is_file()
+
+
+def test_v3_two_process_different_config_conflicts_without_overwrite(tmp_path):
+    """Serialize distinct v3 identities and preserve the first published manifest bytes."""
+    _, v2_config, v3_config, baseline = _make_v3_fixture(tmp_path)
+    conflicting_config = tmp_path / "food101_elt_full_v3_conflict.yaml"
+    config_value = yaml.safe_load(v3_config.read_text(encoding="utf-8"))
+    config_value["seed"] = 43
+    conflicting_config.write_text(yaml.safe_dump(config_value), encoding="utf-8")
+    context = multiprocessing.get_context("spawn")
+    results = context.Queue()
+    processes = [
+        context.Process(
+            target=_publish_v3_process,
+            args=(config_path, v2_config, baseline, results),
+        )
+        for config_path in (v3_config, conflicting_config)
+    ]
+    for process in processes:
+        process.start()
+    for process in processes:
+        process.join(40)
+        if process.is_alive():
+            process.terminate()
+            process.join()
+    outcomes = [results.get(timeout=2) for _ in processes]
+    assert sum(result == "PASS" for result in outcomes) == 1
+    assert sum(result.startswith("FileExistsError:") for result in outcomes) == 1
+    assert all(process.exitcode == 0 for process in processes)
+    published_manifest = tmp_path / "data/splits/v3/dataset_manifest.csv"
+    published_before = published_manifest.read_bytes()
+    metadata = json.loads(
+        (tmp_path / "data/splits/v3/dataset_metadata.json").read_text(encoding="utf-8")
+    )
+    assert metadata["complete"] is True
+    ManifestDataset(tmp_path / "data/splits/v3", "train")
+    assert published_manifest.read_bytes() == published_before

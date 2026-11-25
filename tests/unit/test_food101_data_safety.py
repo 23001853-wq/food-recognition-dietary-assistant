@@ -4,7 +4,12 @@ import csv
 import io
 import json
 import multiprocessing
+import os
+import subprocess
+import sys
 import tarfile
+import threading
+from pathlib import Path
 
 import pytest
 from PIL import Image
@@ -144,6 +149,84 @@ def test_validator_failure_cleans_new_staging_directory(tmp_path):
     assert list(tmp_path.glob(".raw.staging-*")) == []
 
 
+def test_killed_extract_recovers_orphan_stage_without_partial_publish(tmp_path):
+    """Kill a child at the pre-publish boundary, then safely retry in the same temp target."""
+    archive = tmp_path / "fixture.tar.gz"
+    target = tmp_path / "raw"
+    _archive(archive, [("raw/image.jpg", "file", "fixture bytes")])
+    child_script = tmp_path / "pause_extract.py"
+    child_script.write_text(
+        "\n".join(
+            [
+                "import sys",
+                "from pathlib import Path",
+                "from food_assistant.data_pipeline.load import extract_archive_staged",
+                "archive, target = map(Path, sys.argv[1:])",
+                "def pause_after_validation(staging):",
+                "    print('READY', flush=True)",
+                "    sys.stdin.readline()",
+                "    return (staging / 'raw/image.jpg').read_text() == 'fixture bytes'",
+                "extract_archive_staged(archive, target, pause_after_validation)",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    python_path = Path(__file__).resolve().parents[2] / "src"
+    child_environment = os.environ.copy()
+    old_python_path = child_environment.get("PYTHONPATH", "")
+    child_environment["PYTHONPATH"] = os.pathsep.join(
+        value for value in (str(python_path), old_python_path) if value
+    )
+    child = subprocess.Popen(
+        [sys.executable, str(child_script), str(archive), str(target)],
+        cwd=tmp_path,
+        env=child_environment,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    ready_line: list[str] = []
+    ready = threading.Event()
+
+    def read_ready_line():
+        """Synchronize with the child without timing guesses or sleeps."""
+        assert child.stdout is not None
+        ready_line.append(child.stdout.readline())
+        ready.set()
+
+    reader = threading.Thread(target=read_ready_line, daemon=True)
+    reader.start()
+    try:
+        assert ready.wait(30), "child did not reach the pre-publish synchronization point"
+        assert ready_line == ["READY\n"]
+        assert not target.exists()
+        assert len(list(tmp_path.glob(".raw.staging-*"))) == 1
+        child.kill()
+        child.wait(timeout=15)
+        reader.join(timeout=5)
+        assert child.returncode is not None
+
+        with atomic.resource_lock(target, timeout_seconds=0):
+            pass
+        extract_archive_staged(
+            archive,
+            target,
+            lambda staging: (
+                (staging / "raw/image.jpg").read_text(encoding="utf-8") == "fixture bytes"
+            ),
+        )
+
+        assert (target / "raw/image.jpg").read_text(encoding="utf-8") == "fixture bytes"
+        assert list(tmp_path.glob(".raw.staging-*")) == []
+    finally:
+        if child.poll() is None:
+            child.kill()
+            child.wait(timeout=15)
+        reader.join(timeout=5)
+        child.communicate(timeout=5)
+
+
 def test_atomic_json_replace_failure_preserves_previous_report(tmp_path, monkeypatch):
     """Leave the old complete report intact if atomic replacement fails."""
     report = tmp_path / "report.json"
@@ -221,8 +304,10 @@ def test_directory_is_published_only_after_validation(tmp_path):
     published = extract_archive_staged(
         archive,
         target,
-        lambda staging: (staging / "meta/classes.txt").is_file()
-        and (staging / "image.jpg").read_text(encoding="utf-8") == "fixture",
+        lambda staging: (
+            (staging / "meta/classes.txt").is_file()
+            and (staging / "image.jpg").read_text(encoding="utf-8") == "fixture"
+        ),
     )
 
     assert published == target

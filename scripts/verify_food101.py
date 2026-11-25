@@ -60,11 +60,16 @@ def verify_loader(dataset_root: Path, manifest_dir: Path, batch_size: int) -> di
         result["preprocessing"] = {
             "status": "BLOCKED",
             "error": f"{type(exc).__name__}: {exc}",
-            "fallback": "deterministic Resize(256), CenterCrop(224), ImageNet normalization; does not test training augmentation",
+            "fallback": (
+                "deterministic Resize(256), CenterCrop(224), ImageNet normalization; "
+                "does not test training augmentation"
+            ),
         }
 
     official = OfficialFood101Dataset(dataset_root, "train", transform=pipeline_transform)
-    official_batch = next(iter(DataLoader(official, batch_size=batch_size, shuffle=False, num_workers=0)))
+    official_batch = next(
+        iter(DataLoader(official, batch_size=batch_size, shuffle=False, num_workers=0))
+    )
     official_images, official_labels = official_batch
     expected_shape = (batch_size, 3, 224, 224)
     official_ok = (
@@ -158,7 +163,16 @@ def main() -> None:
         if report["overall"] == "PASS" and report["data_loader"]["status"] != "PASS":
             report["overall"] = "INCOMPLETE"
         _write_reports(args.report_dir, report)
-    print(json.dumps({"overall": report["overall"], "report_json": str(args.report_dir / "food101_report.json"), "report_markdown": str(args.report_dir / "food101_report.md")}, indent=2))
+    print(
+        json.dumps(
+            {
+                "overall": report["overall"],
+                "report_json": str(args.report_dir / "food101_report.json"),
+                "report_markdown": str(args.report_dir / "food101_report.md"),
+            },
+            indent=2,
+        )
+    )
     if report["overall"] == "FAIL":
         raise SystemExit(1)
 

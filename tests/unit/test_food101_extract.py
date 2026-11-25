@@ -270,6 +270,8 @@ def test_sequential_retries_500_and_timeout_then_resumes_exact_range(tmp_path):
     assert result["official_checksum_verified"] is False
     assert result["local_sha256"] == hashlib.sha256(payload).hexdigest()
     assert result["tar_evidence"]["readable"] is True
+    assert not target.with_name(f"{target.name}.part").exists()
+    assert not target.with_name(f"{target.name}.part.json").exists()
 
 
 @pytest.mark.parametrize("status", [404, 401, 403])

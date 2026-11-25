@@ -48,9 +48,7 @@ def atomic_write_json(path: Path, value: Any) -> None:
     atomic_write_text(path, json.dumps(value, ensure_ascii=False, indent=2) + "\n")
 
 
-def atomic_write_csv(
-    path: Path, rows: Iterable[Mapping[str, Any]], fieldnames: list[str]
-) -> None:
+def atomic_write_csv(path: Path, rows: Iterable[Mapping[str, Any]], fieldnames: list[str]) -> None:
     """Write a CSV table to a sibling temporary file and atomically publish it."""
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -83,10 +81,6 @@ def resource_lock(resource: Path, timeout_seconds: float = 0) -> Iterator[None]:
     lock_path = Path(resource).parent / f".{Path(resource).name}.lock"
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     with lock_path.open("a+b") as handle:
-        handle.seek(0, os.SEEK_END)
-        if handle.tell() == 0:
-            handle.write(b"0")
-            handle.flush()
         started = time.monotonic()
         while True:
             try:
@@ -122,5 +116,3 @@ def checkpoint_digest(payload: Mapping[str, Any]) -> str:
     """Return a stable SHA-256 for a JSON-serializable checkpoint payload."""
     serialized = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
-
-

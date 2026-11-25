@@ -107,10 +107,7 @@ def _load_checkpoint(
             or payload.get("complete") is not True
             or not set(payload["files"]).issubset(expected_files)
             or set(payload["files"]) != set(expected_files)
-            or any(
-                not entry.get("result", {}).get("valid")
-                for entry in payload["files"].values()
-            )
+            or any(not entry.get("result", {}).get("valid") for entry in payload["files"].values())
         ):
             raise ValueError("Checkpoint contract mismatch")
         return payload
@@ -148,9 +145,13 @@ class AuditLock:
                 try:
                     self._descriptor = os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
                 except FileExistsError as retry_exc:
-                    raise RuntimeError("Food-101 audit lock was reacquired by another process") from retry_exc
+                    raise RuntimeError(
+                        "Food-101 audit lock was reacquired by another process"
+                    ) from retry_exc
             except (OSError, ValueError):
-                raise RuntimeError(f"Food-101 audit already running or stale lock exists: {owner}") from exc
+                raise RuntimeError(
+                    f"Food-101 audit already running or stale lock exists: {owner}"
+                ) from exc
             else:
                 raise RuntimeError(f"Food-101 audit already running with PID {owner}") from exc
         os.write(self._descriptor, str(os.getpid()).encode("ascii"))
@@ -240,14 +241,24 @@ def _audit_food101(
 
     def criterion(name: str, passed: bool | None | str, details: Any) -> None:
         """Record a named pass/fail criterion in the final report."""
-        status = passed if isinstance(passed, str) else "NOT_RUN" if passed is None else "PASS" if passed else "FAIL"
+        status = (
+            passed
+            if isinstance(passed, str)
+            else "NOT_RUN"
+            if passed is None
+            else "PASS"
+            if passed
+            else "FAIL"
+        )
         criteria[name] = {"status": status, "details": details}
 
     required = [dataset_root / "images", dataset_root / "meta"]
     criterion("dataset_root", dataset_root.is_dir(), str(dataset_root.resolve()))
     criterion("images_directory", required[0].is_dir(), str(required[0]))
     criterion("metadata_directory", required[1].is_dir(), str(required[1]))
-    meta_files = {name: dataset_root / "meta" / name for name in ("classes.txt", "train.txt", "test.txt")}
+    meta_files = {
+        name: dataset_root / "meta" / name for name in ("classes.txt", "train.txt", "test.txt")
+    }
     missing_meta = [str(path) for path in meta_files.values() if not path.is_file()]
     criterion("required_metadata_files", not missing_meta, {"missing": missing_meta})
     if missing_meta or not dataset_root.is_dir():
@@ -263,14 +274,27 @@ def _audit_food101(
         len(classes) == EXPECTED_CLASSES
         and len(set(classes)) == EXPECTED_CLASSES
         and class_dirs == sorted(classes),
-        {"metadata_classes": len(classes), "unique_labels": len(set(classes)), "image_directories": len(class_dirs), "duplicate_labels": class_duplicates, "directories_without_metadata": sorted(set(class_dirs) - set(classes)), "metadata_without_directories": sorted(set(classes) - set(class_dirs))},
+        {
+            "metadata_classes": len(classes),
+            "unique_labels": len(set(classes)),
+            "image_directories": len(class_dirs),
+            "duplicate_labels": class_duplicates,
+            "directories_without_metadata": sorted(set(class_dirs) - set(classes)),
+            "metadata_without_directories": sorted(set(classes) - set(class_dirs)),
+        },
     )
-    train_names, test_names = _read_lines(meta_files["train.txt"]), _read_lines(meta_files["test.txt"])
+    train_names, test_names = (
+        _read_lines(meta_files["train.txt"]),
+        _read_lines(meta_files["test.txt"]),
+    )
     train_set, test_set = set(train_names), set(test_names)
     path_overlap = sorted(train_set & test_set)
     repeated_train_names = sorted(name for name, count in Counter(train_names).items() if count > 1)
     repeated_test_names = sorted(name for name, count in Counter(test_names).items() if count > 1)
-    train_counts, test_counts = Counter(name.split("/", 1)[0] for name in train_names), Counter(name.split("/", 1)[0] for name in test_names)
+    train_counts, test_counts = (
+        Counter(name.split("/", 1)[0] for name in train_names),
+        Counter(name.split("/", 1)[0] for name in test_names),
+    )
     all_names = train_set | test_set
     invalid_names = sorted(
         name
@@ -288,9 +312,26 @@ def _audit_food101(
         and not repeated_train_names
         and not repeated_test_names
         and not invalid_names
-        and all(train_counts[key] == EXPECTED_TRAIN_PER_CLASS and test_counts[key] == EXPECTED_TEST_PER_CLASS for key in classes)
+        and all(
+            train_counts[key] == EXPECTED_TRAIN_PER_CLASS
+            and test_counts[key] == EXPECTED_TEST_PER_CLASS
+            for key in classes
+        )
     )
-    criterion("official_split_metadata", split_counts_valid, {"train_entries": len(train_names), "test_entries": len(test_names), "train_per_class": dict(train_counts), "test_per_class": dict(test_counts), "overlap_paths": path_overlap, "repeated_train_entries": repeated_train_names, "repeated_test_entries": repeated_test_names, "invalid_entries": invalid_names})
+    criterion(
+        "official_split_metadata",
+        split_counts_valid,
+        {
+            "train_entries": len(train_names),
+            "test_entries": len(test_names),
+            "train_per_class": dict(train_counts),
+            "test_per_class": dict(test_counts),
+            "overlap_paths": path_overlap,
+            "repeated_train_entries": repeated_train_names,
+            "repeated_test_entries": repeated_test_names,
+            "invalid_entries": invalid_names,
+        },
+    )
 
     split_json_paths = {
         split: dataset_root / "meta" / f"{split}.json" for split in ("train", "test")
@@ -310,7 +351,12 @@ def _audit_food101(
                     if not isinstance(value, dict) or set(value) != set(classes):
                         split_json_valid = False
                         continue
-                    names = [name for values in value.values() if isinstance(values, list) for name in values]
+                    names = [
+                        name
+                        for values in value.values()
+                        if isinstance(values, list)
+                        for name in values
+                    ]
                     if any(not isinstance(values, list) for values in value.values()):
                         split_json_valid = False
                     json_names[split] = names
@@ -349,11 +395,21 @@ def _audit_food101(
 
     expected = {f"images/{name}.jpg" for name in all_names}
     image_files = [path for path in (dataset_root / "images").rglob("*") if path.is_file()]
-    actual_paths = {path.relative_to(dataset_root).as_posix() for path in image_files if path.suffix.lower() == ".jpg"}
-    non_jpg_files = sorted(path.relative_to(dataset_root).as_posix() for path in image_files if path.suffix.lower() != ".jpg")
+    actual_paths = {
+        path.relative_to(dataset_root).as_posix()
+        for path in image_files
+        if path.suffix.lower() == ".jpg"
+    }
+    non_jpg_files = sorted(
+        path.relative_to(dataset_root).as_posix()
+        for path in image_files
+        if path.suffix.lower() != ".jpg"
+    )
     missing_paths = sorted(expected - actual_paths)
     unlisted_paths = sorted(actual_paths - expected)
-    per_class_files = {key: sum(1 for path in actual_paths if path.startswith(f"images/{key}/")) for key in classes}
+    per_class_files = {
+        key: sum(1 for path in actual_paths if path.startswith(f"images/{key}/")) for key in classes
+    }
     total_actual = len(actual_paths)
     expected_images_per_class = EXPECTED_TRAIN_PER_CLASS + EXPECTED_TEST_PER_CLASS
     structure_ok = (
@@ -363,11 +419,30 @@ def _audit_food101(
         and not unlisted_paths
         and not non_jpg_files
     )
-    criterion("image_inventory", structure_ok, {"actual_jpg": total_actual, "expected_jpg": EXPECTED_IMAGES, "per_class": per_class_files, "missing_count": len(missing_paths), "missing_paths": missing_paths, "unlisted_count": len(unlisted_paths), "unlisted_paths": unlisted_paths, "non_jpg_files": non_jpg_files})
+    criterion(
+        "image_inventory",
+        structure_ok,
+        {
+            "actual_jpg": total_actual,
+            "expected_jpg": EXPECTED_IMAGES,
+            "per_class": per_class_files,
+            "missing_count": len(missing_paths),
+            "missing_paths": missing_paths,
+            "unlisted_count": len(unlisted_paths),
+            "unlisted_paths": unlisted_paths,
+            "non_jpg_files": non_jpg_files,
+        },
+    )
 
-    marker_path = Path(metadata_path) if metadata_path is not None else dataset_root / "download_metadata.json"
+    marker_path = (
+        Path(metadata_path)
+        if metadata_path is not None
+        else dataset_root / "download_metadata.json"
+    )
     try:
-        marker = json.loads(marker_path.read_text(encoding="utf-8")) if marker_path.is_file() else None
+        marker = (
+            json.loads(marker_path.read_text(encoding="utf-8")) if marker_path.is_file() else None
+        )
         marker_sha256_valid = (
             isinstance(marker, dict)
             and marker.get("dataset") == "food101"
@@ -376,8 +451,7 @@ def _audit_food101(
             and re.fullmatch(r"[0-9a-f]{64}", marker["download_sha256"]) is not None
         )
         marker_origin_identified = bool(
-            isinstance(marker, dict)
-            and (marker.get("archive_url") or marker.get("source_url"))
+            isinstance(marker, dict) and (marker.get("archive_url") or marker.get("source_url"))
         )
         checksum_info = {
             "local_sha256": marker.get("download_sha256") if isinstance(marker, dict) else None,
@@ -406,12 +480,23 @@ def _audit_food101(
         archive_matches = bool(marker and marker.get("download_sha256") == archive_digest)
         official_sha256 = marker.get("official_sha256") if isinstance(marker, dict) else None
         official_matches = archive_digest == official_sha256 if official_sha256 else None
-        checksum_info.update({"archive_present": True, "archive_bytes": archive_path.stat().st_size, "archive_sha256_recomputed": archive_digest, "archive_matches_download_metadata": archive_matches, "archive_matches_official": official_matches, "official_checksum_verified": official_matches is True})
+        checksum_info.update(
+            {
+                "archive_present": True,
+                "archive_bytes": archive_path.stat().st_size,
+                "archive_sha256_recomputed": archive_digest,
+                "archive_matches_download_metadata": archive_matches,
+                "archive_matches_official": official_matches,
+                "official_checksum_verified": official_matches is True,
+            }
+        )
         logger.info("Archive SHA-256 check finished; matches download marker: %s", archive_matches)
     else:
         checksum_info["archive_present"] = archive_path.is_file()
         if archive_path.is_file():
-            checksum_info.update({"archive_bytes": archive_path.stat().st_size, "archive_recomputed": False})
+            checksum_info.update(
+                {"archive_bytes": archive_path.stat().st_size, "archive_recomputed": False}
+            )
     checksum_info["archive_matches_download_metadata"] = archive_matches
     checksum_info["archive_matches_official"] = official_matches
     license_path = dataset_root / "license_agreement.txt"
@@ -432,10 +517,14 @@ def _audit_food101(
         if path.is_file()
     ]
     filesystem_paths = sorted(set(expected_paths + fingerprint_metadata_paths))
-    metadata_sha256 = {
-        relative: _sha256_file(dataset_root / Path(relative))
-        for relative in fingerprint_metadata_paths
-    } if mode == "full" else {}
+    metadata_sha256 = (
+        {
+            relative: _sha256_file(dataset_root / Path(relative))
+            for relative in fingerprint_metadata_paths
+        }
+        if mode == "full"
+        else {}
+    )
     image_signatures: dict[str, dict[str, int]] = {}
     input_hash = ""
     if mode == "full":
@@ -464,7 +553,13 @@ def _audit_food101(
             files[relative] = {"signature": signature, "result": result}
             done += 1
             if done % max(progress_every, 1) == 0:
-                logger.info("Checked %s/%s images (%s valid, %s errors)", done, len(expected & actual_paths), sum(entry["result"]["valid"] for entry in files.values()), sum(not entry["result"]["valid"] for entry in files.values()))
+                logger.info(
+                    "Checked %s/%s images (%s valid, %s errors)",
+                    done,
+                    len(expected & actual_paths),
+                    sum(entry["result"]["valid"] for entry in files.values()),
+                    sum(not entry["result"]["valid"] for entry in files.values()),
+                )
                 checkpoint_payload = {
                     "schema_version": CHECKPOINT_VERSION,
                     "dataset_root": str(dataset_root.resolve()),
@@ -486,7 +581,11 @@ def _audit_food101(
         _save_json_atomic(checkpoint_path, _checkpoint_envelope(checkpoint_payload))
         image_results = files
     valid_count = sum(entry["result"]["valid"] for entry in image_results.values())
-    bad_images = [{"path": path, **entry["result"]} for path, entry in image_results.items() if not entry["result"]["valid"]]
+    bad_images = [
+        {"path": path, **entry["result"]}
+        for path, entry in image_results.items()
+        if not entry["result"]["valid"]
+    ]
     duplicate_groups: dict[str, list[str]] = defaultdict(list)
     for path, entry in image_results.items():
         digest = entry["result"].get("sha256")
@@ -494,8 +593,16 @@ def _audit_food101(
             duplicate_groups[digest].append(path)
     duplicates = [paths for paths in duplicate_groups.values() if len(paths) > 1]
     if mode == "full":
-        train_hashes = {image_results[path]["result"].get("sha256") for path in image_results if path.removeprefix("images/").removesuffix(".jpg") in train_set}
-        test_hashes = {image_results[path]["result"].get("sha256") for path in image_results if path.removeprefix("images/").removesuffix(".jpg") in test_set}
+        train_hashes = {
+            image_results[path]["result"].get("sha256")
+            for path in image_results
+            if path.removeprefix("images/").removesuffix(".jpg") in train_set
+        }
+        test_hashes = {
+            image_results[path]["result"].get("sha256")
+            for path in image_results
+            if path.removeprefix("images/").removesuffix(".jpg") in test_set
+        }
         hash_leaks = sorted(digest for digest in train_hashes & test_hashes if digest)
         train_image_paths = {f"images/{name}.jpg" for name in train_set}
         test_image_paths = {f"images/{name}.jpg" for name in test_set}
@@ -506,7 +613,11 @@ def _audit_food101(
         ]
         criterion(
             "train_test_duplicate_content",
-            "FAIL" if hash_leaks and reject_cross_split_duplicates else "WARN" if hash_leaks else True,
+            "FAIL"
+            if hash_leaks and reject_cross_split_duplicates
+            else "WARN"
+            if hash_leaks
+            else True,
             {
                 "matching_sha256_count": len(hash_leaks),
                 "sha256": hash_leaks,
@@ -521,9 +632,26 @@ def _audit_food101(
         cross_split_duplicate_groups = []
         criterion("train_test_duplicate_content", None, "Not checked in quick mode.")
     if mode == "full":
-        criterion("image_decoding_and_sha256", valid_count == len(expected & actual_paths), {"checked": len(image_results), "valid": valid_count, "errors": len(bad_images), "bad_images": bad_images, "duplicate_content_groups": len(duplicates), "duplicate_groups": duplicates, "train_test_duplicate_hashes": len(hash_leaks), "train_test_duplicate_sha256": hash_leaks})
+        criterion(
+            "image_decoding_and_sha256",
+            valid_count == len(expected & actual_paths),
+            {
+                "checked": len(image_results),
+                "valid": valid_count,
+                "errors": len(bad_images),
+                "bad_images": bad_images,
+                "duplicate_content_groups": len(duplicates),
+                "duplicate_groups": duplicates,
+                "train_test_duplicate_hashes": len(hash_leaks),
+                "train_test_duplicate_sha256": hash_leaks,
+            },
+        )
     else:
-        criterion("image_decoding_and_sha256", None, "Not run in quick mode; run --mode full for Pillow decode and content hashes.")
+        criterion(
+            "image_decoding_and_sha256",
+            None,
+            "Not run in quick mode; run --mode full for Pillow decode and content hashes.",
+        )
 
     inventory_sha256 = _content_inventory_hash(image_results) if mode == "full" else None
     source_sha256 = marker.get("download_sha256", "") if isinstance(marker, dict) else ""
@@ -581,10 +709,15 @@ def _audit_food101(
         marker_reason = "Phase 2 marker matches the independently verified image inventory."
     elif archive_matches is True:
         marker_status = True
-        marker_reason = "Legacy origin metadata is bound to the retained archive; v2 evidence was freshly recomputed."
+        marker_reason = (
+            "Legacy origin metadata is bound to the retained archive; "
+            "v2 evidence was freshly recomputed."
+        )
     else:
         marker_status = "INCOMPLETE"
-        marker_reason = "Legacy metadata lacks v2 evidence and no matching retained archive was verified."
+        marker_reason = (
+            "Legacy metadata lacks v2 evidence and no matching retained archive was verified."
+        )
     criterion(
         "download_completion_marker",
         marker_status,
@@ -650,14 +783,27 @@ def _audit_food101(
         else [],
         "criteria": criteria,
         "overall": overall,
-        "data_loader": {"status": "NOT_RUN", "scope": "Run --dataloader after full audit; this verifier does not mutate the frozen POC manifest."},
+        "data_loader": {
+            "status": "NOT_RUN",
+            "scope": (
+                "Run --dataloader after full audit; this verifier does not mutate "
+                "the frozen POC manifest."
+            ),
+        },
     }
-    logger.info("Audit finished: %s (%s valid images, %s image errors)", overall, result["valid_images"], result["bad_image_count"])
+    logger.info(
+        "Audit finished: %s (%s valid images, %s image errors)",
+        overall,
+        result["valid_images"],
+        result["bad_image_count"],
+    )
     _write_reports(report_dir, result)
     return result
 
 
-def _validate_passing_report(dataset_root: Path, report_path: Path, report_root: Path) -> dict[str, Any]:
+def _validate_passing_report(
+    dataset_root: Path, report_path: Path, report_root: Path
+) -> dict[str, Any]:
     """Validate a passing report and confirm its raw inputs stayed unchanged."""
     root = Path(dataset_root).resolve()
     report_file, allowed_root = Path(report_path).resolve(), Path(report_root).resolve()
@@ -683,9 +829,10 @@ def _validate_passing_report(dataset_root: Path, report_path: Path, report_root:
     if failed_criteria:
         raise ValueError(f"Verification report has non-passing criteria: {sorted(failed_criteria)}")
     filesystem_paths = report.get("filesystem_paths")
-    if not isinstance(filesystem_paths, list) or _filesystem_input_hash(root, filesystem_paths) != report[
-        "filesystem_fingerprint"
-    ]:
+    if (
+        not isinstance(filesystem_paths, list)
+        or _filesystem_input_hash(root, filesystem_paths) != report["filesystem_fingerprint"]
+    ):
         raise ValueError("Raw filesystem changed after verification")
 
     metadata_paths = [path for path in filesystem_paths if not path.startswith("images/")]
@@ -697,12 +844,12 @@ def _validate_passing_report(dataset_root: Path, report_path: Path, report_root:
     image_paths = sorted({f"images/{name}.jpg" for name in train_names + test_names})
     actual_image_files = [path for path in (root / "images").rglob("*") if path.is_file()]
     actual_image_paths = {
-        path.relative_to(root).as_posix() for path in actual_image_files if path.suffix.lower() == ".jpg"
+        path.relative_to(root).as_posix()
+        for path in actual_image_files
+        if path.suffix.lower() == ".jpg"
     }
     class_names = _read_lines(root / "meta" / "classes.txt")
-    class_directories = sorted(
-        path.name for path in (root / "images").iterdir() if path.is_dir()
-    )
+    class_directories = sorted(path.name for path in (root / "images").iterdir() if path.is_dir())
     if actual_image_paths != set(image_paths) or len(actual_image_files) != len(image_paths):
         raise ValueError("Raw image inventory changed after verification")
     if class_directories != sorted(class_names):
@@ -717,14 +864,15 @@ def _validate_passing_report(dataset_root: Path, report_path: Path, report_root:
     source_marker = marker_details.get("marker_claims") or {}
     source_sha256 = source_marker.get("download_sha256", "")
     source_fingerprint = _source_fingerprint(inventory_sha256, metadata_sha256, source_sha256)
-    if (
-        inventory_sha256 != report.get("inventory_sha256")
-        or source_fingerprint != report.get("source_fingerprint")
+    if inventory_sha256 != report.get("inventory_sha256") or source_fingerprint != report.get(
+        "source_fingerprint"
     ):
         raise ValueError("Raw content fingerprint changed after verification")
     archive_digest = marker_details.get("checksum", {}).get("archive_sha256_recomputed")
     archive_path = root.parent / "food-101.tar.gz.part"
-    if archive_digest and (not archive_path.is_file() or _sha256_file(archive_path) != archive_digest):
+    if archive_digest and (
+        not archive_path.is_file() or _sha256_file(archive_path) != archive_digest
+    ):
         raise ValueError("Retained source archive changed after verification")
     return report
 
@@ -773,16 +921,28 @@ def publish_metadata_v2(
             try:
                 existing = json.loads(target.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError) as exc:
-                raise FileExistsError("Existing metadata v2 is corrupt; refusing to replace it") from exc
+                raise FileExistsError(
+                    "Existing metadata v2 is corrupt; refusing to replace it"
+                ) from exc
             existing_fingerprint = dict(existing) if isinstance(existing, dict) else {}
             expected_fingerprint = dict(metadata)
             existing_fingerprint.pop("verified_at_utc", None)
             expected_fingerprint.pop("verified_at_utc", None)
             if existing_fingerprint == expected_fingerprint:
-                return {"state": "SKIPPED", "path": str(target), "source_fingerprint": report["source_fingerprint"]}
-            raise FileExistsError("Existing metadata v2 has different evidence; refusing to replace it")
+                return {
+                    "state": "SKIPPED",
+                    "path": str(target),
+                    "source_fingerprint": report["source_fingerprint"],
+                }
+            raise FileExistsError(
+                "Existing metadata v2 has different evidence; refusing to replace it"
+            )
         atomic_write_json(target, metadata)
-        return {"state": "PASS", "path": str(target), "source_fingerprint": report["source_fingerprint"]}
+        return {
+            "state": "PASS",
+            "path": str(target),
+            "source_fingerprint": report["source_fingerprint"],
+        }
 
 
 def verify_metadata_v2(
@@ -813,10 +973,13 @@ def _write_reports(report_dir: Path, result: dict[str, Any]) -> None:
         f"- Images on disk: {result.get('actual_image_count', 0)}",
         f"- Classes: {result.get('class_count', 0)}",
         f"- Train/test entries: {result.get('train_count', 0)} / {result.get('test_count', 0)}",
-        f"- Valid / bad images: {result.get('valid_images', 'not checked')} / {result.get('bad_image_count', 'not checked')}",
-        f"- Missing / unlisted images: {result.get('missing_image_count', 0)} / {result.get('unlisted_image_count', 0)}",
+        f"- Valid / bad images: {result.get('valid_images', 'not checked')} / "
+        f"{result.get('bad_image_count', 'not checked')}",
+        f"- Missing / unlisted images: {result.get('missing_image_count', 0)} / "
+        f"{result.get('unlisted_image_count', 0)}",
         f"- Duplicate content groups: {result.get('duplicate_content_groups', 'not checked')}",
-        f"- Train/test duplicate hashes: {result.get('train_test_duplicate_hashes', 'not checked')}",
+        f"- Train/test duplicate hashes: "
+        f"{result.get('train_test_duplicate_hashes', 'not checked')}",
         f"- DataLoader status: {result.get('data_loader', {}).get('status', 'not run')}",
         "",
         "## Warnings",
@@ -829,15 +992,20 @@ def _write_reports(report_dir: Path, result: dict[str, Any]) -> None:
         )
     if not result.get("warnings"):
         lines.append("None reported.")
-    lines.extend([
-        "",
-        "## Criteria",
-        "",
-        "| Criterion | Status | Details |",
-        "|---|---|---|",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Criteria",
+            "",
+            "| Criterion | Status | Details |",
+            "|---|---|---|",
+        ]
+    )
     for name, value in result.get("criteria", {}).items():
-        lines.append(f"| {name} | {value['status']} | `{json.dumps(value['details'], ensure_ascii=False)[:1000]}` |")
+        lines.append(
+            f"| {name} | {value['status']} | "
+            f"`{json.dumps(value['details'], ensure_ascii=False)[:1000]}` |"
+        )
     lines.extend(["", "## Image issues", ""])
     for item in result.get("issues", []):
         lines.append(f"- `{item['path']}`: {item.get('error', 'unknown error')}")

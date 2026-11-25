@@ -597,7 +597,7 @@ def _fetch_sequential_part(
     sleeper: Callable[[float], None],
     random_value: Callable[[], float],
     timeout_seconds: float,
-) -> tuple[Path, SourceInfo]:
+) -> tuple[Path, SourceInfo, tuple[Path, Path] | None]:
     """Fetch a full archive, resuming only from a hash-verified source-bound prefix."""
     valid_partial = _verified_partial(target, url, info)
     if valid_partial is None:
@@ -630,7 +630,7 @@ def _fetch_sequential_part(
                 timeout_seconds=timeout_seconds,
                 ranged=False,
             )
-            return scratch, info
+            return scratch, info, None
         except BaseException:
             scratch.unlink(missing_ok=True)
             raise
@@ -691,7 +691,7 @@ def _fetch_sequential_part(
                 except BaseException:
                     fresh.unlink(missing_ok=True)
                     raise
-                return fresh, refreshed_info
+                return fresh, refreshed_info, None
             if status == 416:
                 response.close()
                 refreshed_info = probe_source(
@@ -719,7 +719,7 @@ def _fetch_sequential_part(
                 except BaseException:
                     fresh.unlink(missing_ok=True)
                     raise
-                return fresh, refreshed_info
+                return fresh, refreshed_info, None
             if not _source_matches_response(info, response):
                 response.close()
                 refreshed_info = probe_source(
@@ -747,7 +747,7 @@ def _fetch_sequential_part(
                 except BaseException:
                     fresh.unlink(missing_ok=True)
                     raise
-                return fresh, refreshed_info
+                return fresh, refreshed_info, None
             _validate_range_response(response, start, end, info)
             try:
                 received = _read_stream(
@@ -806,13 +806,28 @@ def _fetch_sequential_part(
                     os.fsync(output.fileno())
                 if assembled.stat().st_size != info.total_bytes:
                     raise IntegrityError("Resumed archive length differs from source total")
-                return assembled, info
+                return assembled, info, (part, metadata_path)
             except BaseException:
                 assembled.unlink(missing_ok=True)
                 raise
         finally:
             tail.unlink(missing_ok=True)
     raise ExtractError("Sequential archive transfer exhausted its retry policy")
+
+
+def _remove_consumed_partial(partial: tuple[Path, Path] | None) -> None:
+    """Remove only the verified prefix consumed to assemble a published archive."""
+    if partial is None:
+        return
+    part_path, metadata_path = partial
+    try:
+        part_path.unlink(missing_ok=True)
+        metadata_path.unlink(missing_ok=True)
+    except OSError as error:
+        raise ExtractError(
+            f"Published archive is complete but consumed partial cleanup failed: "
+            f"{type(error).__name__}"
+        ) from None
 
 
 def _verify_tar(path: Path) -> dict[str, Any]:
@@ -948,6 +963,13 @@ def download_sequential(
     with resource_lock(target, lock_timeout_seconds):
         existing = _validate_complete_archive(target, url, official_sha256)
         if existing is not None:
+            existing_info = SourceInfo(
+                total_bytes=existing["expected_total_bytes"],
+                etag=existing.get("etag"),
+                last_modified=existing.get("last_modified"),
+                range_supported=True,
+            )
+            _remove_consumed_partial(_verified_partial(target, url, existing_info))
             return existing
         info = probe_source(
             url,
@@ -958,7 +980,7 @@ def download_sequential(
             random_value=random_value,
             timeout_seconds=timeout_seconds,
         )
-        assembled, final_info = _fetch_sequential_part(
+        assembled, final_info, consumed_partial = _fetch_sequential_part(
             url,
             target,
             info,
@@ -971,6 +993,7 @@ def download_sequential(
         )
         try:
             result = _publish_archive(assembled, target, url, final_info, official_sha256, run_id)
+            _remove_consumed_partial(consumed_partial)
             LOGGER.info("extract run_id=%s mode=sequential event=%s", run_id, result["state"])
             return result
         finally:

@@ -65,7 +65,9 @@ def _make_small_food101(root):
     (root / "license_agreement.txt").write_text("fixture license", encoding="utf-8")
     image_results = {
         f"images/pizza/{name}_image.jpg": {
-            "result": food101_verifier._inspect_image(root / "images" / "pizza" / f"{name}_image.jpg")
+            "result": food101_verifier._inspect_image(
+                root / "images" / "pizza" / f"{name}_image.jpg"
+            )
         }
         for name in ("train", "test")
     }
@@ -222,16 +224,12 @@ def test_metadata_v2_is_published_and_accepted_by_current_verifier(tmp_path, mon
     metadata_path = report_root / "food101_metadata_v2.json"
 
     assert result["overall"] == "PASS"
-    published = food101_verifier.publish_metadata_v2(
-        root, report_path, metadata_path, report_root
-    )
+    published = food101_verifier.publish_metadata_v2(root, report_path, metadata_path, report_root)
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     verified = food101_verifier.verify_metadata_v2(
         root, metadata_path, report_root / "verify-after"
     )
-    skipped = food101_verifier.publish_metadata_v2(
-        root, report_path, metadata_path, report_root
-    )
+    skipped = food101_verifier.publish_metadata_v2(root, report_path, metadata_path, report_root)
 
     assert published["state"] == "PASS"
     assert metadata["schema_version"] == food101_verifier.RAW_METADATA_SCHEMA_VERSION
@@ -249,9 +247,7 @@ def test_metadata_is_not_created_when_raw_changes_after_audit(tmp_path, monkeypa
     _configure_small_contract(monkeypatch)
     food101_verifier.audit_food101(root, report_dir)
     metadata_path = report_root / "food101_metadata_v2.json"
-    Image.new("RGB", (15, 15), (80, 10, 20)).save(
-        root / "images" / "pizza" / "train_image.jpg"
-    )
+    Image.new("RGB", (15, 15), (80, 10, 20)).save(root / "images" / "pizza" / "train_image.jpg")
 
     with pytest.raises(ValueError, match="changed after verification"):
         food101_verifier.publish_metadata_v2(
@@ -294,9 +290,7 @@ def test_current_verifier_rejects_corrupt_or_unsupported_metadata_v2(
     metadata_path.parent.mkdir(parents=True)
     metadata_path.write_text(corrupt_value, encoding="utf-8")
 
-    result = food101_verifier.verify_metadata_v2(
-        root, metadata_path, report_root / "verify"
-    )
+    result = food101_verifier.verify_metadata_v2(root, metadata_path, report_root / "verify")
 
     assert result["overall"] == "FAIL"
     assert result["criteria"]["download_completion_marker"]["status"] == "FAIL"
@@ -317,9 +311,7 @@ def test_current_verifier_rejects_metadata_inventory_mismatch(tmp_path, monkeypa
     metadata["inventory_sha256"] = "0" * 64
     food101_verifier.atomic_write_json(metadata_path, metadata)
 
-    result = food101_verifier.verify_metadata_v2(
-        root, metadata_path, report_root / "verify-after"
-    )
+    result = food101_verifier.verify_metadata_v2(root, metadata_path, report_root / "verify-after")
 
     assert result["overall"] == "FAIL"
     assert result["criteria"]["download_completion_marker"]["status"] == "FAIL"

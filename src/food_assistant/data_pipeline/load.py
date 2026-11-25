@@ -30,6 +30,19 @@ def _safe_member_path(name: str, staging_root: Path) -> Path:
     return target
 
 
+def _cleanup_stale_staging(destination: Path) -> None:
+    """Remove orphaned sibling staging directories while holding the target lock."""
+    prefix = f".{destination.name}.staging-"
+    parent = destination.parent.resolve()
+    for candidate in parent.glob(f"{prefix}*"):
+        if candidate.is_symlink() or not candidate.is_dir():
+            continue
+        resolved = candidate.resolve()
+        if resolved.parent != parent or not resolved.name.startswith(prefix):
+            continue
+        shutil.rmtree(resolved)
+
+
 def extract_archive_staged(
     archive: Path,
     target: Path,
@@ -47,6 +60,7 @@ def extract_archive_staged(
     with resource_lock(destination, lock_timeout_seconds):
         if destination.exists():
             raise FileExistsError(f"Refusing to replace existing dataset directory: {destination}")
+        _cleanup_stale_staging(destination)
         staging = Path(
             tempfile.mkdtemp(prefix=f".{destination.name}.staging-", dir=destination.parent)
         )

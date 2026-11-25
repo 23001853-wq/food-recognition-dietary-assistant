@@ -248,3 +248,12 @@ __marimo__/
 .venv-*/
 .env.*
 !.env.example
+
+# Local prompts, generated reports and resource lock files stay out of source releases.
+/promts/
+/artifacts/reports/
+/data/reports/
+/MODEL_EVALUATION_REPORT.md
+/TEST_REPORT.md
+/docs/evaluation_report.md
+*.lock
