@@ -1,4 +1,6 @@
+import json
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 from sqlalchemy import func, select
@@ -166,6 +168,15 @@ def test_production_cpu_single_image_smoke(client, image_bytes, monkeypatch):
     pointer = PROJECT_ROOT / "artifacts/production/current.json"
     if not pointer.exists():
         pytest.skip("Production pointer not available; no artifact downloads")
+    artifact_root = (PROJECT_ROOT / "artifacts/models").resolve()
+    artifact_name = json.loads(pointer.read_text(encoding="utf-8"))["artifact"]
+    artifact_path = (artifact_root / Path(artifact_name)).resolve()
+    if not artifact_path.is_relative_to(artifact_root):
+        pytest.fail("Production pointer resolves outside the configured model artifact root")
+    if not (artifact_path / "model_config.json").is_file() or not (
+        artifact_path / "checksum.sha256"
+    ).is_file():
+        pytest.skip("Production pointer target is not released; no model will be fabricated")
     monkeypatch.setattr(client.app.state.settings, "inference_device", "cpu")
     response = client.post(
         "/api/v1/predictions",

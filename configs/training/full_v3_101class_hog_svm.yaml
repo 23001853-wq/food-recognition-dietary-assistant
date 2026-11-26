@@ -1,0 +1,27 @@
+# Full-v3 experiment proposal; not a trained model or approved compute budget.
+model_name: hog_svm
+manifest_dir: data/splits/v3
+expected_dataset_version: v3
+expected_num_classes: 101
+expected_manifest_sha256: f135b5492bc3767a5f18268838de67a5535004f8d361c3a659ff9946d4f9f3c4
+expected_labels_sha256: b80ce882769587fdaf2b1ed0534ccfffb1e6c70a8c7b6c3deac45ef167a0ae43
+expected_source_fingerprint: f5cfdb7480c2650ed94c8624652ac595e4a7f038d660f4886869836632c56ed1
+expected_inventory_sha256: b91c327114b45c4fe2e626404a86c449891e6e258c832e67a7f2350aeb59adb9
+expected_v3_fingerprint: aa43cfa766982006fe6a3611a49e0f07d35d33d56e54310e923cb5e58fbdbb59
+seed: 42
+device: cpu
+pretrained: false
+image_size: [128, 128]
+grayscale: true
+hog:
+  orientations: 9
+  pixels_per_cell: [8, 8]
+  cells_per_block: [2, 2]
+classifier: LinearSVC
+dual: false
+max_iter: 2000
+tol: 0.001
+standard_scaler: true
+c_candidates: [0.1, 1.0, 10.0]
+selection_metric: macro_f1
+tuning_split: val

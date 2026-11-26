@@ -65,14 +65,43 @@ def evaluate_models():
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--protocol", type=Path)
+    parser.add_argument("--freeze-record", type=Path)
+    parser.add_argument("--evidence-output", type=Path)
     args = parser.parse_args()
+    is_full_v3_test = (
+        args.split == "test"
+        and not args.smoke
+        and read_json(args.artifact / "model_config.json").get("dataset_version") == "v3"
+    )
+    final_test_attempt = None
+    if is_full_v3_test:
+        if not args.freeze_record or not args.protocol or not args.evidence_output:
+            parser.error(
+                "Full-v3 final test requires --freeze-record, --protocol and "
+                "separate --evidence-output"
+            )
+        from food_assistant.ml.full_v3_release import claim_final_test_attempt
+
+        if args.evidence_output.exists():
+            parser.error("Final test evidence target exists; refusing repeated evaluation")
+        final_test_attempt = claim_final_test_attempt(
+            args.freeze_record,
+            args.evidence_output,
+            args.artifact,
+            args.protocol,
+        )
     torch.set_num_threads(2)
     release = Release(args.artifact, args.device)
     frozen = None
     if args.protocol:
-        from food_assistant.ml.protocol import verify_frozen_candidate
+        if release.config.get("dataset_version") == "v3":
+            from food_assistant.ml.full_v3_release import verify_protocol
 
-        frozen = verify_frozen_candidate(args.protocol, args.artifact, args.device)
+            verify_protocol(args.protocol)
+        else:
+            from food_assistant.ml.protocol import verify_frozen_candidate
+
+            frozen = verify_frozen_candidate(args.protocol, args.artifact, args.device)
     elif not args.smoke and release.config.get("dataset_version") == "poc-v1":
         parser.error("Freeze all three POC candidates first and provide --protocol")
     data = ManifestDataset(args.manifest_dir, args.split, limit_per_class=2 if args.smoke else None)
@@ -88,10 +117,21 @@ def evaluate_models():
         or args.smoke
     ):
         raise ValueError("Evaluation split/sample count differs from frozen protocol")
-    output = args.artifact / ("evaluation_smoke" if args.smoke else f"evaluation_{args.split}")
+    output = (
+        args.evidence_output
+        if is_full_v3_test
+        else args.artifact / ("evaluation_smoke" if args.smoke else f"evaluation_{args.split}")
+    )
     if (output / "metrics.json").exists():
         raise ValueError("Evaluation already exists; refusing repeated test evaluation")
+    if is_full_v3_test:
+        output.mkdir(parents=True, exist_ok=False)
+        write_json(
+            output / "evaluation_attempt.json",
+            {"status": "STARTED", "freeze_record": str(args.freeze_record.resolve())},
+        )
     truth, predictions, timings, details = [], [], [], []
+    top5_correct = 0
     # Warm up using validation image; test images never tune any hyperparameters.
     warmup = ManifestDataset(args.manifest_dir, "val", limit_per_class=1)
     with Image.open(warmup.root / warmup.rows[0]["relative_path"]) as image:
@@ -100,10 +140,11 @@ def evaluate_models():
     for row in data.rows:
         with Image.open(data.root / row["relative_path"]) as image:
             start = time.perf_counter()
-            result = release.predict(image.convert("RGB"), 3)
+            result = release.predict(image.convert("RGB"), 5)
             timings.append((time.perf_counter() - start) * 1000)
         truth.append(int(row["class_id"]))
         predictions.append(result[0].class_id)
+        top5_correct += int(any(item.class_id == truth[-1] for item in result))
         details.append(
             {
                 "image_path": row["relative_path"],
@@ -116,6 +157,7 @@ def evaluate_models():
             }
         )
     metrics = export_metrics(output, truth, predictions, data.labels["labels"], timings)
+    metrics["top5_accuracy"] = top5_correct / len(truth)
     metrics.update(
         model_name=release.config["model_name"],
         run_id=release.config["run_id"],
@@ -129,6 +171,9 @@ def evaluate_models():
         warmup_iterations=3,
         latency_scope="image preprocessing plus inference; excludes file decode",
         num_classes=len(data.labels["labels"]),
+        labels_sha256=hashlib.sha256(
+            (args.manifest_dir / "labels.json").read_bytes()
+        ).hexdigest(),
         protocol_sha256=hashlib.sha256(args.protocol.read_bytes()).hexdigest()
         if args.protocol
         else None,
@@ -150,10 +195,20 @@ def evaluate_models():
             "cuda_version": torch.version.cuda,
         },
     )
-    if not args.smoke:
+    if not args.smoke and not is_full_v3_test:
         write_json(args.artifact / f"metrics_{args.split}.json", metrics)
         seal_artifact(args.artifact)
+    if is_full_v3_test:
+        metrics["frozen_candidate_id"] = read_json(final_test_attempt)["candidate_run_id"]
+        metrics["freeze_record_sha256"] = hashlib.sha256(
+            args.freeze_record.read_bytes()
+        ).hexdigest()
+        write_json(output / "final_test_evidence.json", metrics)
     write_json(output / "evaluation_complete.json", {"complete": True, "sample_count": len(data)})
+    if is_full_v3_test:
+        from food_assistant.ml.full_v3_release import complete_final_test_attempt
+
+        complete_final_test_attempt(final_test_attempt, output, args.freeze_record)
     print(metrics)
 
 
@@ -181,31 +236,55 @@ def select_production():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifacts", type=Path, nargs="+", required=True)
-    parser.add_argument("--pointer", type=Path, default=Path("artifacts/production/current.json"))
     parser.add_argument(
-        "--comparison", type=Path, default=Path("artifacts/reports/experiment_comparison.csv")
+        "--comparison",
+        type=Path,
+        default=Path("artifacts/reports/validation_selection.csv"),
     )
     args = parser.parse_args()
     if len(args.artifacts) < 2:
         parser.error("At least two independently trained methods are required")
     candidates = []
     for directory in args.artifacts:
-        release = Release(directory)
+        config = read_json(directory / "model_config.json")
         val = read_json(directory / "metrics_val.json")
-        test = read_json(directory / "metrics_test.json")
+        labels = read_json(directory / "labels.json")["labels"]
+        checksums_path = directory / "checksum.sha256"
+        if not checksums_path.is_file():
+            raise ValueError(f"Candidate has no sealed checksum inventory: {directory}")
+        inventory = read_json(checksums_path)
+        model_file = directory / (
+            "model.joblib" if config.get("model_name") == "hog_svm" else "model.pth"
+        )
+        essential_files = (
+            model_file,
+            directory / "model_config.json",
+            directory / "labels.json",
+            directory / "preprocessing.json",
+            directory / "metrics_val.json",
+        )
+        if any(not path.is_file() or path.name not in inventory for path in essential_files):
+            raise ValueError("Candidate model checkpoint is missing from its seal")
+        for path in essential_files:
+            with path.open("rb") as handle:
+                actual_digest = hashlib.file_digest(handle, "sha256").hexdigest()
+            if actual_digest != inventory[path.name]:
+                raise ValueError(f"Candidate evidence checksum mismatch: {path.name}")
+            if path == model_file:
+                checksum = actual_digest
+        artifact_size = model_file.stat().st_size
         candidates.append(
             {
-                "config": release.config,
-                "test": test,
+                "config": config,
                 "val": val,
-                "labels": release.labels["labels"],
+                "labels": labels,
                 "artifact": directory,
+                "artifact_checksum": checksum,
+                "artifact_size_bytes": artifact_size,
             }
         )
-    # Rank by validation macro-F1, then measured latency; test remains a final report.
-    chosen = rank_candidates(candidates)[0]
-    root = Path("artifacts/models").resolve()
-    relative = chosen["artifact"].resolve().relative_to(root)
+    ranked = rank_candidates(candidates)
+    chosen = ranked[0]
     args.comparison.parent.mkdir(parents=True, exist_ok=True)
     columns = [
         "model_name",
@@ -215,12 +294,10 @@ def select_production():
         "sample_count",
         "validation_macro_f1",
         "top1_accuracy",
-        "macro_precision",
-        "macro_recall",
-        "macro_f1",
-        "p50_ms",
-        "p95_ms",
-        "artifact_size_mb",
+        "validation_top1_accuracy",
+        "validation_p95_ms",
+        "artifact_size_bytes",
+        "artifact_checksum",
     ]
     with args.comparison.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=columns)
@@ -228,43 +305,16 @@ def select_production():
         for candidate in candidates:
             row = {
                 **candidate["config"],
-                **candidate["test"],
+                "sample_count": candidate["val"]["sample_count"],
+                "top1_accuracy": candidate["val"]["top1_accuracy"],
                 "validation_macro_f1": candidate["val"]["macro_f1"],
+                "validation_top1_accuracy": candidate["val"]["top1_accuracy"],
+                "validation_p95_ms": candidate["val"]["p95_ms"],
+                "artifact_size_bytes": candidate["artifact_size_bytes"],
+                "artifact_checksum": candidate["artifact_checksum"],
             }
             writer.writerow({key: row.get(key) for key in columns})
-    report = [
-        "# Measured POC comparison",
-        "",
-        "Selection uses validation macro-F1; official test was evaluated after freezing.",
-        "",
-        "| Model | Run | Val macro-F1 | Test Top-1 | Test macro-F1 | CPU P95 ms |",
-        "|---|---|---:|---:|---:|---:|",
-    ]
-    for candidate in candidates:
-        cfg, val, test = candidate["config"], candidate["val"], candidate["test"]
-        report.append(
-            f"| {cfg['model_name']} | {cfg['run_id']} | {val['macro_f1']:.4f} | "
-            f"{test['top1_accuracy']:.4f} | {test['macro_f1']:.4f} | {test['p95_ms']:.2f} |"
-        )
-    report.extend(
-        [
-            "",
-            f"Selected artifact: `{relative.as_posix()}`.",
-            "",
-            "POC 10 classes only. Scores are not calibrated probabilities. "
-            "Review per-class failures and convergence/training budget before presenting results.",
-        ]
+    print(
+        f"Validation selection only: {chosen['config']['model_name']}/"
+        f"{chosen['config']['run_id']}; no test data read and no production pointer changed."
     )
-    args.comparison.with_suffix(".md").write_text("\n".join(report) + "\n", encoding="utf-8")
-    args.pointer.parent.mkdir(parents=True, exist_ok=True)
-    write_json(
-        args.pointer,
-        {
-            "artifact": relative.as_posix(),
-            "reason": (
-                "highest validation macro-F1; latency breaks ties; "
-                "final test metrics reported separately"
-            ),
-        },
-    )
-    print(f"Production pointer: {relative}")

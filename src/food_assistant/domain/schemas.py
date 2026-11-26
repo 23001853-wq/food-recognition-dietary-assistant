@@ -1,11 +1,18 @@
 """Versioned wire contracts shared by HTTP endpoints and inference."""
 
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Annotated, Literal
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 
 from food_assistant.domain.enums import MealType, PortionSize
 
@@ -118,6 +125,14 @@ class MealOut(Contract):
     notes: str | None
     items: list[ItemOut]
     created_at: datetime
+
+    @field_validator("created_at")
+    @classmethod
+    def normalize_created_at(cls, value: datetime) -> datetime:
+        """Normalize wire timestamps to UTC and reject ambiguous naive values."""
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("created_at must include a timezone")
+        return value.astimezone(UTC)
 
 
 class NutritionEstimate(Contract):

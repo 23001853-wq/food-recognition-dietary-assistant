@@ -34,6 +34,18 @@ def compute_metrics(truth, predicted, num_classes):
     }
 
 
+def top_k_accuracy_from_scores(truth, scores, k=5):
+    """Return top-k accuracy from a finite samples-by-classes score matrix."""
+    values = np.asarray(scores)
+    targets = np.asarray(truth)
+    if values.ndim != 2 or values.shape[0] != targets.size or not 1 <= k <= values.shape[1]:
+        raise ValueError("Scores, targets or top-k value have incompatible dimensions")
+    if not np.isfinite(values).all() or not np.isin(targets, np.arange(values.shape[1])).all():
+        raise ValueError("Scores and targets must be finite valid class indices")
+    top_indices = np.argpartition(values, -k, axis=1)[:, -k:]
+    return float(np.mean(np.any(top_indices == targets[:, None], axis=1)))
+
+
 def export_metrics(output, truth, predicted, labels, timing=None):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)

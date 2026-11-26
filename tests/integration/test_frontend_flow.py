@@ -67,5 +67,5 @@ def test_frontend_confirm_save_and_image_change(client, image_bytes, monkeypatch
     upload["data"] = buffer.getvalue()
     app.run()
     assert not app.exception
-    assert "recognition_result" not in app.session_state.filtered_state
-    assert "recognition_saved" not in app.session_state.filtered_state
+    assert "recognition_result" not in app.session_state
+    assert "recognition_saved" not in app.session_state

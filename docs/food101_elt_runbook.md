@@ -144,6 +144,14 @@ If PostgreSQL requires credentials that are unavailable, tests are **BLOCKED**, 
 
 Authentication errors should be resolved through DBeaver's normal credential prompt or the local PostgreSQL administrator. Do not retrieve saved passwords, change an existing account's password, or disable server authentication. For migration errors, confirm the URL database name ends in `_test`, the role owns that database, and the expected schema is writable; then rerun only against that isolated database.
 
+#### Diagnose database-not-found and role-mismatch errors
+
+Treat the PostgreSQL service, role, application database, test database, and each connection URL as separate checks. Connect to the maintenance database `postgres` first, then query `pg_database` and `pg_roles`; a `POSTGRES_DB` setting alone does not create a database. Confirm the application URL's parsed username/database against `POSTGRES_USER` and `POSTGRES_DB`, and confirm the test URL points to a distinct `_test` database. Do not print either URL because it contains credentials.
+
+For the local configuration used during the Phase 6.2 retest, the server already contained both `food_assistant` and `food_assistant_test`. The application URL named a nonexistent `food_user` role while the configured `POSTGRES_USER` and authenticated test URL used `postgres`. The local ignored `.env` was corrected to use the already configured `postgres` credentials for `food_assistant`; no PostgreSQL role or password was changed. `.env.example` was aligned with the documented local-development account. The app database received a read-only connectivity probe only; Alembic was run by the integration fixture against `food_assistant_test` only.
+
+After resolving the URL mismatch, verify both connections through the project's Python environment with `SELECT current_database(), current_user, 1`; print only those non-secret fields. Run `pytest tests/integration -q -rs` and confirm every PostgreSQL test executes. A model-serving smoke test may remain skipped when the production pointer has no corresponding released artifacts; do not create a fake checkpoint or download/train a model to satisfy it.
+
 ### Recovery details
 
 - Safe Load creates a sibling `.staging-*` directory while holding its resource-scoped OS lock. A retry removes orphan staging directories with that exact reserved prefix only after acquiring the lock and confirming the destination is absent. Symlinked or non-directory entries are left untouched.

@@ -1,0 +1,21 @@
+# Full-v3 experiment proposal; pretrained weights must be locally available and authorized.
+model_name: efficientnet_b0
+manifest_dir: data/splits/v3
+expected_dataset_version: v3
+expected_num_classes: 101
+expected_manifest_sha256: f135b5492bc3767a5f18268838de67a5535004f8d361c3a659ff9946d4f9f3c4
+expected_labels_sha256: b80ce882769587fdaf2b1ed0534ccfffb1e6c70a8c7b6c3deac45ef167a0ae43
+expected_source_fingerprint: f5cfdb7480c2650ed94c8624652ac595e4a7f038d660f4886869836632c56ed1
+expected_inventory_sha256: b91c327114b45c4fe2e626404a86c449891e6e258c832e67a7f2350aeb59adb9
+expected_v3_fingerprint: aa43cfa766982006fe6a3611a49e0f07d35d33d56e54310e923cb5e58fbdbb59
+seed: 42
+device: auto
+pretrained: true
+input_size: [224, 224]
+batch_size: 8
+head_epochs: 5
+fine_tune_epochs: 10
+head_lr: 0.001
+fine_tune_lr: 0.0001
+weight_decay: 0.0001
+amp: true

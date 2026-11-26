@@ -64,8 +64,8 @@ def test_camera_capture_save_and_source_switch(client, image_bytes, monkeypatch)
     assert item["protein_g"] is not None
     app.radio(key="image_source").set_value("Tải ảnh").run()
     assert not app.exception
-    assert "recognition_result" not in app.session_state.filtered_state
-    assert "recognition_saved" not in app.session_state.filtered_state
+    assert "recognition_result" not in app.session_state
+    assert "recognition_saved" not in app.session_state
     assert calls.count(("POST", "/api/v1/predictions")) == 1
     camera["capture"] = None
     app.radio(key="image_source").set_value("Chụp ảnh").run()
